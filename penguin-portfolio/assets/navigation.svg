@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 470"><rect width="740" height="470" rx="22" fill="#e8eef5"/>
-<g stroke="#cfdae4" stroke-width="1"><path d="M0 75H740M0 150H740M0 225H740M0 300H740M0 375H740"/><path d="M75 0V470M150 0V470M225 0V470M300 0V470M375 0V470M450 0V470M525 0V470M600 0V470M675 0V470"/></g>
-<g fill="#aabfcc"><rect x="106" y="100" width="120" height="55" rx="10"/><rect x="275" y="50" width="70" height="140" rx="10"/><rect x="480" y="111" width="150" height="70" rx="10"/><rect x="100" y="272" width="88" height="132" rx="10"/><rect x="290" y="320" width="160" height="62" rx="10"/><rect x="565" y="302" width="90" height="104" rx="10"/></g>
-<path d="M241 350C270 255 352 260 370 239S425 195 459 221S522 249 540 221" fill="none" stroke="#ed9e84" stroke-width="7" stroke-linecap="round" stroke-dasharray="2 18"/>
-<circle cx="239" cy="350" r="33" fill="#253d54" stroke="white" stroke-width="7"/><path d="M240 327l14 34-29-10z" fill="#a4e0c7"/>
-<circle cx="542" cy="218" r="22" fill="#eaa78b" stroke="white" stroke-width="7"/><path d="M533 218l7 8 13-17" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/>
-<g fill="#5d788b" font-family="Arial,sans-serif" font-size="18" font-weight="700"><text x="190" y="413">START</text><text x="562" y="216">GOAL</text></g></svg>

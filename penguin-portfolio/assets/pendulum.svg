@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 470"><rect width="740" height="470" rx="22" fill="#f5ede8"/>
-<g stroke="#e4d7d0" stroke-width="1"><path d="M0 80H740M0 160H740M0 240H740M0 320H740M0 400H740"/><path d="M100 0V470M200 0V470M300 0V470M400 0V470M500 0V470M600 0V470M700 0V470"/></g>
-<path d="M100 378H645" stroke="#a4abb0" stroke-width="7" stroke-linecap="round"/><g stroke="#456275" stroke-width="15" stroke-linecap="round"><path d="M365 338L303 104"/></g>
-<g fill="#fff9f4" stroke="#456275" stroke-width="7"><circle cx="303" cy="104" r="20"/><rect x="301" y="319" width="131" height="55" rx="11"/><circle cx="328" cy="383" r="16"/><circle cx="405" cy="383" r="16"/></g>
-<path d="M366 330V89" fill="none" stroke="#d09d8a" stroke-width="3" stroke-dasharray="9 10"/>
-<path d="M357 133Q336 143 321 157" stroke="#e6aa8a" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M322 158l12-3-6-13" fill="none" stroke="#e6aa8a" stroke-width="5" stroke-linecap="round"/>
-<g fill="#7b7774" font-family="Arial,sans-serif" font-size="20" font-weight="600"><text x="380" y="117">θ</text><text x="470" y="354">x</text><text x="432" y="407">← CONTROL →</text></g></svg>
