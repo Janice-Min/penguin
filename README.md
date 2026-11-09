@@ -19,7 +19,7 @@ A responsive, bright, minimal portfolio with a small penguin mascot. Built with 
 4. **Illustrations / penguin:** images live in `assets/`. Project cards are text-only.
 5. **CV:** verify every entry before publishing. Add email details and your actual CV PDF when ready. Current CV page can be saved as PDF with the Print button.
 
-The hero illustration is a custom **schematic**, not an experiment photograph.
+The home hero is a CSS/SVG record player with the penguin photo as the record label. Tapping the record plays the song.
 
 ## Preview locally
 
@@ -41,7 +41,7 @@ The site lives at the repository root, so GitHub Pages serves it at **https://ja
 
 ## Background music
 
-The floating music card plays CHUU's "Strawberry Rush" through the official Spotify embed. Paste the song's Spotify link into `MUSIC.spotifyUrl` at the top of the music section in `app.js`. While the player is open, links inside the site swap the page content instead of reloading, so the song keeps playing while visitors browse.
+The record on the home page and the floating music card (bottom left) play CHUU's "Strawberry Rush" through the official Spotify embed. The card stays hidden while the record is on screen and nothing is playing. Paste the song's Spotify link into `MUSIC.spotifyUrl` at the top of the music section in `app.js`. While the player is open, links inside the site swap the page content instead of reloading, so the song keeps playing while visitors browse.
 
 ### Suggested next iterations
 

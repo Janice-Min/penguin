@@ -58,7 +58,7 @@ function markActiveNav(){
     if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
   });
 }
-function renderPage(){mountFeatured();mountProjects();mountDetail();markActiveNav()}
+function renderPage(){mountFeatured();mountProjects();mountDetail();markActiveNav();mountHeroRecord()}
 
 /* ---------- Music player (official Spotify embed) ---------- */
 const ICON={
@@ -66,8 +66,10 @@ const ICON={
   hide:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9.5l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   show:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 14.5l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 };
-const music={state:'idle',controller:null,token:0};
+// state: idle (no player) | open (player shown) | mini (player hidden, still playing)
+const music={state:'idle',controller:null,token:0,playing:false,loading:false,heroVisible:false,observer:null,ui:null};
 function spotifyTrackId(){const m=String(MUSIC.spotifyUrl||'').match(/track[\/:]([A-Za-z0-9]{22})/);return m?m[1]:null}
+function openSpotifySearch(){window.open('https://open.spotify.com/search/'+encodeURIComponent(`${MUSIC.artist} ${MUSIC.title}`),'_blank','noopener')}
 function loadSpotifyApi(){
   if(window.__spotifyApi)return Promise.resolve(window.__spotifyApi);
   if(music.apiPromise)return music.apiPromise;
@@ -84,6 +86,7 @@ function plainEmbed(id){
 }
 function startPlayer(id,area){
   const token=++music.token;
+  music.loading=true;music.playing=false;syncMusicUI();
   area.innerHTML='<div class="music-host"></div>';
   loadSpotifyApi().then(api=>{
     if(token!==music.token)return;
@@ -91,34 +94,90 @@ function startPlayer(id,area){
       if(token!==music.token){ctrl.destroy();return}
       music.controller=ctrl;
       ctrl.addListener('ready',()=>ctrl.play());
+      ctrl.addListener('playback_update',e=>{
+        if(token!==music.token||!e||!e.data)return;
+        music.loading=false;music.playing=!e.data.isPaused;syncMusicUI();
+        // Started from the record: once it is really playing, fold the player into the mini bar.
+        if(music.autoMini&&music.playing){music.autoMini=false;setTimeout(()=>{if(music.state==='open'&&music.playing)setMusicState('mini')},1500)}
+      });
     });
-  }).catch(()=>{if(token===music.token)area.innerHTML=plainEmbed(id)});
+  }).catch(()=>{
+    if(token!==music.token)return;
+    // Fallback embed: playback state is not reported, so assume it plays.
+    area.innerHTML=plainEmbed(id);music.loading=false;music.playing=true;syncMusicUI();
+  });
+}
+function setMusicState(s){
+  const {card,btn,close}=music.ui;
+  music.state=s;card.dataset.state=s;close.hidden=s==='idle';
+  const label={idle:`Play ${MUSIC.title} by ${MUSIC.artist}`,open:'Hide player (music keeps playing)',mini:'Show player'}[s];
+  btn.innerHTML=ICON[{idle:'play',open:'hide',mini:'show'}[s]];btn.setAttribute('aria-label',label);btn.title=label;
+  btn.setAttribute('aria-expanded',String(s==='open'));
+  syncMusicUI();
+}
+function musicStart(){
+  const id=spotifyTrackId();
+  if(!id){openSpotifySearch();return}
+  setMusicState('open');startPlayer(id,music.ui.area);
+}
+function musicStop(){
+  music.token++;music.autoMini=false;
+  if(music.controller){try{music.controller.destroy()}catch(e){}music.controller=null}
+  music.ui.area.innerHTML='';music.playing=false;music.loading=false;setMusicState('idle');
+}
+// The record on the home page: first tap starts the song, later taps pause and resume.
+function toggleFromRecord(){
+  if(music.state==='idle'){music.autoMini=true;return musicStart()}
+  const c=music.controller;
+  if(c&&typeof c.togglePlay==='function')c.togglePlay();
+  else setMusicState('open');
+}
+function syncMusicUI(){
+  if(!music.ui)return;
+  document.body.dataset.music=music.state;
+  document.body.dataset.playing=music.playing?'1':'0';
+  // Keep the floating card out of the way while the record on the home page is on screen and nothing is playing.
+  music.ui.card.classList.toggle('is-tucked',music.state==='idle'&&music.heroVisible);
+  const hint=document.querySelector('[data-music-hint]');
+  const record=document.querySelector('[data-music-toggle]');
+  let text,label;
+  if(music.state==='idle'){
+    const hasTrack=!!spotifyTrackId();
+    text=hasTrack?'Tap the record to play':'Tap the record to find it on Spotify';
+    label=hasTrack?`Play ${MUSIC.title} by ${MUSIC.artist}`:`Find ${MUSIC.title} by ${MUSIC.artist} on Spotify`;
+  }else if(music.loading){text='Starting…';label=`Starting ${MUSIC.title}`}
+  else if(music.playing){text='Now playing. Tap to pause';label=`Pause ${MUSIC.title}`}
+  else{text='Paused. Tap to play';label=`Play ${MUSIC.title}`}
+  if(hint)hint.textContent=text;
+  if(record)record.setAttribute('aria-label',label);
+}
+function mountHeroRecord(){
+  document.querySelectorAll('[data-music-title]').forEach(el=>el.textContent=MUSIC.title);
+  document.querySelectorAll('[data-music-artist]').forEach(el=>el.textContent=MUSIC.artist);
+  const record=document.querySelector('[data-music-toggle]');
+  if(record)record.addEventListener('click',toggleFromRecord);
+  if(music.observer){music.observer.disconnect();music.observer=null}
+  const hero=document.querySelector('.hero-art');
+  music.heroVisible=!!hero;
+  if(hero&&'IntersectionObserver' in window){
+    music.observer=new IntersectionObserver(([e])=>{music.heroVisible=e.isIntersecting;syncMusicUI()},{threshold:.2});
+    music.observer.observe(hero);
+  }
+  syncMusicUI();
 }
 function mountMusic(){
-  const box=document.createElement('section');
-  box.className='music-card';box.dataset.state='idle';box.setAttribute('aria-label','Music player');
-  box.innerHTML=`<div class="music-row"><div class="music-cover" aria-hidden="true">🍓</div><div class="music-text"><small>Now playing ♡</small><b>${MUSIC.title}</b><span>${MUSIC.artist}</span></div><button class="music-close" type="button" aria-label="Stop music and close player" hidden>×</button><button class="music-btn" type="button"></button></div><div class="music-player"></div>`;
-  document.body.appendChild(box);document.body.classList.add('has-music');
-  const btn=box.querySelector('.music-btn'),close=box.querySelector('.music-close'),area=box.querySelector('.music-player');
-  function setState(s){
-    music.state=s;box.dataset.state=s;close.hidden=s==='idle';
-    const label={idle:`Play ${MUSIC.title} by ${MUSIC.artist}`,open:'Hide player (music keeps playing)',mini:'Show player'}[s];
-    btn.innerHTML=ICON[{idle:'play',open:'hide',mini:'show'}[s]];btn.setAttribute('aria-label',label);btn.title=label;
-    btn.setAttribute('aria-expanded',String(s==='open'));
-  }
-  btn.addEventListener('click',()=>{
-    if(music.state==='idle'){
-      const id=spotifyTrackId();
-      if(!id){window.open('https://open.spotify.com/search/'+encodeURIComponent(`${MUSIC.artist} ${MUSIC.title}`),'_blank','noopener');return}
-      setState('open');startPlayer(id,area);
-    }else setState(music.state==='open'?'mini':'open');
+  const card=document.createElement('section');
+  card.className='music-card';card.dataset.state='idle';card.setAttribute('aria-label','Music player');
+  card.innerHTML=`<div class="music-row"><div class="music-cover" aria-hidden="true"><img src="assets/penguin-portrait.jpg" alt=""></div><div class="music-text"><small>Now playing ♡</small><b>${MUSIC.title}</b><span>${MUSIC.artist}</span></div><button class="music-close" type="button" aria-label="Stop music and close player" hidden>×</button><button class="music-btn" type="button"></button></div><div class="music-player"></div>`;
+  if(document.querySelector('.hero-art'))card.classList.add('is-tucked');
+  document.body.appendChild(card);document.body.classList.add('has-music');
+  music.ui={card,btn:card.querySelector('.music-btn'),close:card.querySelector('.music-close'),area:card.querySelector('.music-player')};
+  music.ui.btn.addEventListener('click',()=>{
+    if(music.state==='idle')musicStart();
+    else setMusicState(music.state==='open'?'mini':'open');
   });
-  close.addEventListener('click',()=>{
-    music.token++;
-    if(music.controller){try{music.controller.destroy()}catch(e){}music.controller=null}
-    area.innerHTML='';setState('idle');btn.focus();
-  });
-  setState('idle');
+  music.ui.close.addEventListener('click',()=>{musicStop();music.ui.btn.focus()});
+  setMusicState('idle');
 }
 
 /* ---------- Keep music playing while moving between pages ---------- */
@@ -156,13 +215,13 @@ function mountSoftNavigation(){
 
 /* ---------- Init ---------- */
 function init(){
+  mountMusic();
   renderPage();
   const toggle=document.querySelector('.mobile-toggle');const nav=document.querySelector('.nav');
   if(toggle&&nav)toggle.addEventListener('click',()=>{const open=nav.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open))});
   const year=document.getElementById('year');if(year)year.textContent=new Date().getFullYear();
   const penguin=document.getElementById('penguin-float');const bubble=document.getElementById('penguin-bubble');
   if(penguin&&bubble){penguin.addEventListener('click',()=>{const open=bubble.classList.toggle('show');penguin.setAttribute('aria-expanded',String(open))})}
-  mountMusic();
   if(root&&window.fetch&&window.history.pushState)mountSoftNavigation();
 }
 document.addEventListener('DOMContentLoaded',init);
