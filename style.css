@@ -136,3 +136,9 @@ body.has-music .footer{padding-bottom:96px}
 @media print{.music-card{display:none!important}}
 
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+@media(prefers-reduced-motion:reduce){
+/* The record only spins after a visitor taps it, and another tap stops it, so it keeps spinning even here. */
+.vinyl-disc,.music-cover{animation-name:spin!important;animation-duration:2.4s!important;animation-timing-function:linear!important;animation-iteration-count:infinite!important;animation-play-state:paused!important}
+body[data-playing="1"] .vinyl-disc,body[data-playing="1"] .music-cover{animation-play-state:running!important}
+.tonearm .arm{transition:transform 1.1s cubic-bezier(.5,0,.2,1)!important}
+}
