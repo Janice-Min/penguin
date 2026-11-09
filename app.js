@@ -168,7 +168,7 @@ function mountHeroRecord(){
 function mountMusic(){
   const card=document.createElement('section');
   card.className='music-card';card.dataset.state='idle';card.setAttribute('aria-label','Music player');
-  card.innerHTML=`<div class="music-row"><div class="music-cover" aria-hidden="true"><img src="assets/penguin-portrait.jpg" alt=""></div><div class="music-text"><small>Now playing ♡</small><b>${MUSIC.title}</b><span>${MUSIC.artist}</span></div><button class="music-close" type="button" aria-label="Stop music and close player" hidden>×</button><button class="music-btn" type="button"></button></div><div class="music-player"></div>`;
+  card.innerHTML=`<div class="music-row"><div class="music-cover" aria-hidden="true"><img src="assets/strawberry.svg" alt=""></div><div class="music-text"><small>Now playing ♡</small><b>${MUSIC.title}</b><span>${MUSIC.artist}</span></div><button class="music-close" type="button" aria-label="Stop music and close player" hidden>×</button><button class="music-btn" type="button"></button></div><div class="music-player"></div>`;
   if(document.querySelector('.hero-art'))card.classList.add('is-tucked');
   document.body.appendChild(card);document.body.classList.add('has-music');
   music.ui={card,btn:card.querySelector('.music-btn'),close:card.querySelector('.music-close'),area:card.querySelector('.music-player')};

@@ -19,7 +19,7 @@ A responsive, bright, minimal portfolio with a small penguin mascot. Built with 
 4. **Illustrations / penguin:** images live in `assets/`. Project cards are text-only.
 5. **CV:** verify every entry before publishing. Add email details and your actual CV PDF when ready. Current CV page can be saved as PDF with the Print button.
 
-The home hero is a CSS/SVG record player with the penguin photo as the record label. Tapping the record plays the song.
+The home hero is a CSS/SVG record player with a strawberry (`assets/strawberry.svg`) as the record label. Tapping the record plays the song.
 
 ## Preview locally
 
