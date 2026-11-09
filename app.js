@@ -16,7 +16,7 @@ const PROJECTS = [
 const MUSIC = {
   title: 'Strawberry Rush',
   artist: 'CHUU',
-  spotifyUrl: ''
+  spotifyUrl: 'https://open.spotify.com/track/1gq1gf44tZ9cyTdlcyoJd1'
 };
 
 const root = document.getElementById('site-content');
