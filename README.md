@@ -9,7 +9,7 @@ A responsive, bright, minimal portfolio with a small penguin mascot. Built with 
 - `project.html?slug=gripper`: Reusable detail page for each project (shows the paper and abstract when a project has `paper`)
 - `research.html`: Research areas and working style
 - `about.html`: About, experience and skills
-- `cv.html`: Browser-readable CV and contact. Use **Print / Save CV as PDF**.
+- `cv.html`: Browser-readable CV and contact. The **Download CV (PDF)** button downloads `Jungbin_Janice_Min_CV.pdf` from the repository root; replace that file to update it.
 
 ## Edit the content
 
