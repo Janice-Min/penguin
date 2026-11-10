@@ -13,13 +13,12 @@ A responsive, bright, minimal portfolio with a small penguin mascot. Built with 
 
 ## Edit the content
 
-1. **Project names, descriptions, methods and results:** edit `PROJECTS` in `app.js`.
-2. **Home, About, Research and CV pages:** edit the text directly in the relevant `.html` file.
-3. **Accent colors:** change CSS variables near the top of `style.css`.
-4. **Illustrations / penguin:** images live in `assets/`. Project cards are text-only.
-5. **CV:** verify every entry before publishing. Add email details and your actual CV PDF when ready. Current CV page can be saved as PDF with the Print button.
-
-The home hero is a CSS/SVG record player with a strawberry (`assets/strawberry.svg`) as the record label. Tapping the record plays the song.
+1. **Projects:** edit `PROJECTS` in `app.js`. The comment at the top lists every field. `featured: true` puts a project on the home page, `cats` sets the filter tabs, and `paper`, `table`, `findings`, `specs`, `diagram`, `methodFigures`, `figures` and `links` add the extra blocks you see on the detail pages.
+2. **Latest publication on the home page:** built automatically from the project that has `paper`.
+3. **Home, About, Research and CV pages:** edit the text directly in the relevant `.html` file.
+4. **Accent colors:** change CSS variables near the top of `style.css`.
+5. **Images:** live in `assets/`. Paper figures are `nav-*.png`, the drink tray is `tray-*`, and the cart-pole drawing is `cartpole.svg` (plain SVG, editable in any text editor).
+6. **Contact:** the email address appears in the footer of every page and in the CV page's Contact row.
 
 ## Preview locally
 
@@ -45,9 +44,9 @@ The record on the home page and the floating music card (bottom left) play CHUU'
 
 ### Suggested next iterations
 
-- Add verified result graphs and role details on project pages.
-- Attach a PDF CV and contact email (if desired).
-- Add writing / notes only after the essential portfolio is polished.
+- Add the cart-pole comparison results once they are final.
+- Add the drink tray prototype photos and stair test results.
+- Add a Google Scholar link once the profile exists.
 - Optionally set up a custom domain.
 
 

@@ -1,7 +1,49 @@
 // EDIT HERE: This is the main content file for your portfolio.
-// Projects with a `paper` field link to the published paper on their detail page.
+// Fields used by the cards and detail pages:
+//   cats       filter ids: 'design' | 'ai' | 'control' (a project can have more than one)
+//   featured   true = shown on the home page
+//   org        where the work was done (side panel)
+//   paper      publication box: venue, authors (html), abstract, links
+//   diagram    one figure under Overview · methodFigures: figures under Approach
+//   specs      small number tiles under Approach · table: results table · findings: result cards
+//   links      extra links in the side panel, e.g. code repository
+const ME = '<strong>Jungbin Min*</strong>';
 const PROJECTS = [
-  {slug:'gripper',title:'Tendon-driven Gripper Optimization',category:'Robot Design',categoryId:'design',subtitle:'Searching for robotic hand designs that can grasp across a wider range of object sizes and positions.',description:'Designed a simulation workflow in MuJoCo to evaluate graspable workspace and optimize tendon-driven finger geometry.',tags:['MuJoCo','CMA-ES','Python'],status:'Ongoing research',year:'2026',role:'Modeling · Experiment design · Optimization',overview:'How can we design an underactuated tendon-driven gripper that successfully grasps objects across different sizes and initial positions? This project explores the relationship between finger geometry, joint properties, and graspability.',methods:['Parameterized two-finger MJCF models with tendon actuation','Graspable Workspace Map over object radius and surface offset','Design variables including finger link lengths, opening angles, gap, and joint stiffness','Sensitivity studies and CMA-ES-based parameter search'],results:'The evaluation framework maps where each design grasps successfully. Against the baseline fingers, an optimized candidate succeeds across a much larger part of the workspace, with the largest gains for objects of 30 to 50 mm radius. The best design found by the search was then built and tested as a 3D-printed prototype.',
+  {slug:'navigation',featured:true,title:'Before We Trust Them: Decision-Making Failures in Navigation of Foundation Models',category:'Robot Intelligence',cats:['ai'],
+   subtitle:'When high success rates hide unreliable decisions: a diagnostic evaluation of LLMs and VLMs on navigation-related tasks.',
+   description:'Co-first-authored paper showing that high success rates can hide unreliable navigation decisions by LLMs and VLMs.',
+   tags:['LLM / VLM','Navigation','Safety evaluation'],status:'Published',year:'2026',
+   org:'roBot Intelligence Group (BIG), Carnegie Mellon University · visiting scholar',
+   role:'Co-first author · ASCII map path-planning tasks · Back-of-the-Building study · Writing',
+   paper:{venue:'Proceedings of the AAAI Symposium Series · 2026 Summer Symposium',short:'AAAI Symposium Series',url:'https://ojs.aaai.org/index.php/AAAI-SS/article/view/42905',
+    authors:`Jua Han*, Jaeyoon Seo*, ${ME}, Sieun Choi, Huichan Seo, Jihie Kim, Jean Oh`,
+    note:'* Equal contribution',
+    links:[{label:'arXiv',url:'https://doi.org/10.48550/arXiv.2601.05529'},{label:'Project page',url:'https://cmubig.github.io/before-we-trust-them/'}],
+    abstract:'High success rates on navigation-related tasks do not necessarily translate into reliable decision making by foundation models. To examine this gap, we evaluate current models on six diagnostic tasks spanning three settings: reasoning under complete spatial information, reasoning under incomplete spatial information, and reasoning under safety-relevant information. Our results show that the current metrics may not capture critical limitations of the models and indicate good performance, underscoring the need for failure-focused analysis to understand model limitations and guide future progress. In a path-planning setting with unknown cells, GPT-5 achieved a high success rate of 93%; Yet, the failed cases exhibit fundamental limitations of the models, e.g., the lack of structural spatial understanding essential for navigation. We also find that newer models are not always more reliable than their predecessors on this end. In reasoning under safety-relevant information, Gemini-2.5 Flash achieved only 67% on the challenging emergency-evacuation task, underperforming Gemini-2.0 Flash, which reached 100% under the same condition. Across all evaluations, models exhibited structural collapse, hallucinated reasoning, constraint violations, and unsafe decisions. These findings show that foundation models still exhibit substantial failures in navigation-related decision making and require fine-grained evaluation before they can be trusted.'},
+   overview:'Language and vision-language models are increasingly used for robot planning, but a plausible-looking answer is not the same as a reliable decision. Rather than add another benchmark for maximizing success, this work builds a diagnostic evaluation that exposes the failures hidden behind high average success rates.',
+   methods:['Six diagnostic tasks across three settings: complete spatial information, incomplete spatial information, and safety-relevant information','ASCII grid maps at three difficulty levels, plus maps with unknown <code>?</code> cells where the model has to state its own assumption','Five validity checks for every map answer: reach the goal, avoid obstacles, keep the map structure, keep a continuous 4-connected path, and match the drawn path to the listed coordinates','Egocentric image sequences (turn direction, missing frame) and text scenarios (orientation tracking, emergency evacuation)','5 LLMs and 8 open-source VLMs, including GPT-5, GPT-4o, Gemini-2.5/2.0 Flash, Llama-3-8B, LLaVA, Qwen2.5-VL and InternVL3, with 100 runs per task','A supplementary Back-of-the-Building task: plan a route from a real building image (GPT-4o, Claude Opus 4.1, Claude Sonnet 4)'],
+   methodFigures:[{src:'assets/nav-overview.png',w:1800,h:701,alt:'Overview of the three evaluation settings with example inputs: ASCII maps, egocentric image sequences, and text prompts for orientation tracking and emergency evacuation',caption:'The three evaluation settings and example inputs. (Paper, Fig. 2)'}],
+   resultsTitle:'Key results',
+   results:['High task success did not mean reliable decisions. On the ASCII maps, GPT-5 succeeded in every complete-information run and in 93% of runs on the hardest unknown-cell map, yet 7% of those runs used diagonal moves that the task explicitly prohibits.'],
+   table:{caption:'Success rate (%) over 100 runs per task. 95% confidence intervals are reported in the paper (Table 1).',
+    head:['Task','Gemini-2.5 Flash','Gemini-2.0 Flash','GPT-5','GPT-4o','Llama-3-8B'],
+    groups:[{label:'Map-based path planning',rows:[['Complete · Easy',66,100,100,80,0],['Complete · Normal',93,0,100,0,0],['Complete · Hard',73,0,100,0,0],['Unknown cells · Map 1',90,0,100,0,0],['Unknown cells · Map 2',56,0,93,0,0]]},
+     {label:'Safety-relevant information',rows:[['Orientation tracking · Easy',98,99,98,94,7],['Orientation tracking · Normal',100,72,82,66,12],['Orientation tracking · Hard',100,42,100,53,51],['Emergency evacuation · Easy',100,100,100,100,100],['Emergency evacuation · Hard',67,100,100,98,46]]}]},
+   findings:[
+    {title:'Abrupt collapse',text:'Gemini-2.0 Flash and GPT-4o fell from 100% and 80% on the easy map to 0% on the normal and hard maps, with paths that stopped mid-route.'},
+    {title:'Broken map structure',text:'Llama-3-8B scored 0% on every map: it lost the layout of the input map and drew paths with invalid symbols.'},
+    {title:'Newer is not always safer',text:'On the hard evacuation prompt, Gemini-2.5 Flash chose the exit in only 67% of runs, against 100% for Gemini-2.0 Flash. It sent the user to the professor\'s office 32% of the time, and 1% of the time to a server room the prompt never mentioned.'},
+    {title:'Hallucinated reasoning',text:'On egocentric image sequences, turn-direction accuracy stayed around 40–60% with a strong bias toward "right", and missing-frame answers were often close to chance.'}],
+   figures:[
+    {src:'assets/nav-map-outputs.png',w:1800,h:685,alt:'ASCII map inputs next to an invalid Llama-3-8B output in red and a correct answer in green, for an easy complete map and an unknown-cell map',caption:'Map path-planning outputs: (a) complete-information easy map, (b) unknown-cell Map 1. Red: actual Llama-3-8B outputs that break the map and the path. Green: correct answers. (Paper, Fig. 4)'},
+    {src:'assets/nav-evacuation.png',narrow:true,w:1200,h:470,alt:'Pie chart: exit 67%, professor office 32%, server room 1%',caption:'Where Gemini-2.5 Flash sent the user on the hard emergency-evacuation prompt. (Paper, Fig. 5)'},
+    {src:'assets/nav-back-of-building.png',w:1800,h:362,alt:'Four route maps drawn by models for the Back-of-the-Building task, each showing a different failure',caption:'Back-of-the-Building task: (a) structural collapse, (b) directional error, (c) constraint violation, (d) waypoint error. (Paper, Fig. 6)'}],
+   next:'Scale the evaluation to more models, richer navigation inputs and more safety-critical scenarios, and test whether the same failures persist in interactive, real-world navigation.'},
+
+  {slug:'gripper',featured:true,title:'Tendon-driven Gripper Optimization',category:'Robot Design',cats:['design'],subtitle:'Searching for robotic hand designs that can grasp across a wider range of object sizes and positions.',description:'Designed a simulation workflow in MuJoCo to evaluate graspable workspace and optimize tendon-driven finger geometry.',tags:['MuJoCo','CMA-ES','Python'],status:'Ongoing',year:'2026',
+   org:'BEAR Lab, Sungkyunkwan University · undergraduate researcher',
+   role:'Modeling · Experiment design · Optimization',overview:'How can we design an underactuated tendon-driven gripper that successfully grasps objects across different sizes and initial positions? This project explores the relationship between finger geometry, joint properties, and graspability.',methods:['Parameterized two-finger MJCF models with tendon actuation','Graspable Workspace Map over object radius and surface offset','Design variables including finger link lengths, opening angles, gap, and joint stiffness','Sensitivity studies and CMA-ES-based parameter search'],
+   results:'The evaluation framework maps where each design grasps successfully. During the search, an optimized candidate already covered far more of the workspace than the baseline fingers on the eight object radii below (83 successful cells against 14), with the largest gains for objects of 30 to 50 mm radius. The final best design succeeds in 342 of the 15,225 measured cells and was then built as a 3D-printed prototype that holds a paper cup.',
    photos:[
     {src:'assets/gripper-prototype-grasp.jpg',w:1200,h:800,alt:'3D-printed two-finger tendon-driven gripper holding a paper coffee cup',caption:'The printed prototype holding a paper cup.'},
     {src:'assets/gripper-prototype-open.jpg',w:1200,h:800,alt:'The same gripper with both fingers open and a thin tendon running back to the actuator',caption:'Fingers open, with the tendon routed back to the actuator.'}],
@@ -9,15 +51,41 @@ const PROJECTS = [
     {src:'assets/gripper-sim-side.jpg',w:738,h:720,alt:'MuJoCo simulation, side view: RB5 robot arm whose two-finger hand grasps a green cylinder'},
     {src:'assets/gripper-sim-top.jpg',w:738,h:720,alt:'MuJoCo simulation, top view: the two curved fingers wrap around the green cylinder'}]},
    figures:[
-    {src:'assets/gripper-workspace-comparison.png',w:2048,h:1297,alt:'Eight workspace maps, one per object radius from 10 to 80 mm, comparing where the optimized and baseline fingers grasp successfully',caption:'Graspable workspace of an optimized candidate (filled hand) against the baseline (dashed hand), for object radii from 10 to 80 mm. Green cells succeed only with the optimized fingers, red only with the baseline, and blue with both: 83 successful cells against 14.'},
-    {src:'assets/gripper-best-workspace.png',w:1710,h:1350,alt:'3D scatter plot of successful grasp cells over x offset, y clearance and object radius for the best design',caption:'Every successful cell of the best design: 342 of 15,225 measured cells, with 317 enveloping grasps and 25 fingertip grasps.'}],next:'Compare optimized candidates on consistent test sets, improve robustness, and investigate transfer from a standalone hand model to a robot arm.'},
-  {slug:'navigation',title:'Evaluating Robot Navigation with LLMs',category:'Robot Intelligence',categoryId:'ai',subtitle:'Understanding when language-guided navigation decisions succeed — and why they fail.',description:'Worked on evaluating LLM/VLM navigation behavior and organizing success criteria and failure patterns.',tags:['LLM / VLM','Navigation','Evaluation'],status:'Published paper',year:'2026',role:'Evaluation · Analysis',
-   paper:{venue:'Proceedings of the AAAI Symposium Series',short:'AAAI Symposium Series',url:'https://ojs.aaai.org/index.php/AAAI-SS/article/view/42905',
-    // DRAFT: written from this site's own project description. Replace with the official abstract from the AAAI page.
-    abstract:'Large language models are increasingly used to turn natural-language instructions into robot navigation decisions, but a plausible-looking plan is not the same as a reliable one. This work evaluates LLM- and VLM-based robot navigation using map-based task representations, explicit success criteria for generated action sequences, and a structured categorization of recurring failure modes. Rather than reporting a single accuracy number, it examines when language-guided navigation succeeds, where it breaks down, and what these failure patterns imply for building more reliable robot autonomy.'},
-   overview:'Reliable robotic autonomy needs more than a plausible plan. This work focused on evaluating language-model-based navigation behavior using clear success criteria and a structured analysis of failure cases.',methods:['Navigation experiments with map-based task representations','Success/failure criteria for generated action sequences','Categorization of recurrent errors','Qualitative analysis of robustness and reliability'],results:'The project emphasized rigorous evaluation and interpretable error analysis rather than reporting a single accuracy number.',next:'Continue exploring how planning, physical feasibility, and real-world robot constraints can be evaluated together.'},
-  {slug:'pendulum',title:'Learning to Balance an Inverted Pendulum',category:'Control Systems',categoryId:'control',subtitle:'A side-by-side study of classical and learning-based control.',description:'Built a simulation-based study comparing PID, LQR and reinforcement learning on an inverted pendulum.',tags:['PID / LQR','PPO','Control'],status:'Ongoing study',year:'2026',role:'Simulation · Control · Evaluation',overview:'Inverted pendulum stabilization is a compact testbed for comparing how feedback control and reinforcement learning handle the same dynamics and constraints.',methods:['Consistent plant model and initial conditions','PID and LQR controller tuning','PPO training and evaluation','Comparative metrics for angle error, settling time, failure rate, and control effort'],results:'A PPO training baseline has been established. A controlled comparison with PID and LQR is planned as the next evaluation stage.',next:'Run repeated tests under matched disturbances and report controller performance with consistent metrics.'},
-  {slug:'driving',title:'Autonomous Driving with ROS 2 & CARLA',category:'Autonomous Systems',categoryId:'ai',subtitle:'Connecting sensing, planning and vehicle control.',description:'Explored autonomous driving integration using ROS 2, CARLA and perception/control pipelines.',tags:['ROS 2','CARLA','Planning'],status:'Project experience',year:'2026',role:'Integration · Planning · Control',overview:'Autonomous driving combines perception, decision-making and low-level control into a single working loop. This project explored these system-level connections.',methods:['ROS 2-based robotics workflows','CARLA driving simulation','Sensor inputs including camera, LiDAR and IMU','Path tracking and behavior planning experiments'],results:'The work provided practical experience with the challenges of integrating multiple robotic software components.',next:'Explore systematic evaluation of path tracking and navigation safety across varied scenarios.'}
+    {src:'assets/gripper-workspace-comparison.png',w:2048,h:1297,alt:'Eight workspace maps, one per object radius from 10 to 80 mm, comparing where the optimized and baseline fingers grasp successfully',caption:'Graspable workspace of an optimized candidate found during the search (filled hand) against the baseline (dashed hand), at eight object radii from 10 to 80 mm. Green cells succeed only with the optimized fingers, red only with the baseline, and blue with both: 83 successful cells against 14.'},
+    {src:'assets/gripper-best-workspace.png',w:1710,h:1350,alt:'3D scatter plot of successful grasp cells over x offset, y clearance and object radius for the best design',caption:'Every successful cell of the final best design: 342 of 15,225 measured cells, with 317 enveloping grasps and 25 fingertip grasps.'}],
+   next:'Compare optimized candidates on a consistent test set, improve robustness, and extend the evaluation from the standalone hand to the arm-mounted setup shown above.'},
+
+  {slug:'tray',featured:true,title:'Self-Leveling Drink Tray',category:'Robot Design',cats:['design','control'],
+   subtitle:'A one-handed tray that keeps up to seven drinks level on stairs, using two-axis active tilt control.',
+   description:'Analysis-driven design of a hanging two-axis gimbal tray that uses an IMU and PID control to cancel roll and pitch.',
+   tags:['IMU + PID','Gimbal','Dynamics'],status:'Ongoing',year:'2026',
+   org:'Capstone Design, Sungkyunkwan University · team of 7',
+   role:'Team lead · Analysis & modeling',
+   overview:'Carrying several drinks up to a second-floor seat with one hand is hard to do without spilling. Existing cup holders and serving trays rely only on gravity: a pendulum or passive gimbal that never measures or corrects tilt. This project designs a tray that hangs below two motorized axes and actively holds itself level.',
+   photosFit:'contain',
+   photos:[
+    {src:'assets/tray-cad-front.jpg',w:853,h:1063,alt:'CAD model of the tray from the front: a handle on top, roll and pitch motors, and a round tray holding cups below',caption:'CAD assembly, front view.'},
+    {src:'assets/tray-cad-back.jpg',w:814,h:955,alt:'CAD model of the tray from the back, showing the two rotation axes and the side posts that carry the round tray',caption:'Rear view: the round tray hangs below both rotation axes.'}],
+   methods:['<b>Spill condition.</b> A drink\'s surface stays perpendicular to apparent gravity, tan φ = a<sub>h</sub> / (g + a<sub>v</sub>). An 8 cm cup with 1 cm of headroom spills at about 14°, so the target is ±3° per axis.','<b>Passive limit.</b> A 10 cm pendulum has a natural frequency of 1.58 Hz, right next to walking (1.7–2 Hz). At resonance it passes 100% of the handle tilt to the tray, whatever the damping.','<b>Active control.</b> An MPU-6050 IMU and a complementary filter (α ≈ 0.99) estimate tilt, and one PID loop per axis drives roll and pitch back to 0°, with a 200 Hz target loop rate.','<b>Torque budget.</b> Off-center cups, horizontal acceleration, angular acceleration and friction give about 19 kgf·cm per axis with a safety factor of 2, used to compare servo, stepper, DC and BLDC options.','<b>Hanging gimbal.</b> The tray sits below the rotation axes, with motor power and logic power kept separate (Li-ion pack, Arduino Nano).'],
+   methodFigures:[{src:'assets/tray-passive-limits.png',w:1760,h:624,alt:'Two frequency-response plots of a passive 10 cm pendulum tray for damping ratios 0.05, 0.2 and 0.7, with the walking band next to the 1.58 Hz resonance',caption:'Why passive damping is not enough, for a 10 cm pendulum model of a passive tray. Left: share of the handle tilt that reaches the tray. Right: tray sway from walking acceleration, relative to the static case. The walking band (pink) sits right next to resonance.'}],
+   specs:{caption:'Design targets, to be confirmed by testing.',items:[['±3°','tray tilt per axis'],['±30°','handle tilt it can correct'],['0.3 s','to settle within ±3° after a 10° tilt'],['7 cups','about 0.5 kg each'],['≤ 2 kg','body mass, held in one hand'],['≥ 1 h','continuous use']]},
+   resultsTitle:'Current status',
+   results:'The detailed design is complete: CAD assembly, control loop, wiring and a torque-based motor comparison. The first prototype will use high-torque servos, with a geared stepper as the fallback if response or precision falls short.',
+   figures:[{src:'assets/tray-cad-drive.jpg',narrow:true,w:1200,h:817,alt:'Close-up CAD view of the roll and pitch drive unit under the handle',caption:'Roll and pitch drive unit: one motor per axis, with the tray hanging below both axes.'}],
+   next:'Order the motors, build the frame, tune tilt estimation and PID, then carry water-filled cups up and down stairs and compare spills for a plain tray, the tray with control off, and the tray with control on.'},
+
+  {slug:'pendulum',featured:true,title:'Cart-Pole Control: PID vs LQR vs PPO',category:'Control',cats:['control'],
+   subtitle:'Not which controller wins, but what each one trades off on the same plant, with the same limits and metrics.',
+   description:'Comparing classical feedback control and reinforcement learning on one cart-pole simulator with shared limits, objective and metrics.',
+   tags:['PID / LQR','PPO','Python'],status:'Ongoing',year:'2026',role:'Simulation · Controller design · Evaluation',
+   links:[{label:'Code',text:'Janice-Min/InversePendulum',url:'https://github.com/Janice-Min/InversePendulum'}],
+   overview:'Cart-pole stabilization is a compact testbed for comparing feedback control and reinforcement learning on the same dynamics. The aim is not to crown a winner, but to see where each controller is strong or weak: robustness to the starting angle, settling speed, and how much force it spends.',
+   diagram:{src:'assets/cartpole.svg',w:720,h:400,alt:'Cart-pole diagram: a 1 kg cart on a track limited to plus or minus 2.4 m, pushed by a force of at most 25 N, carrying a 0.4 m pole with a 0.2 kg point mass at the tip, tilted by angle theta from vertical',caption:'The cart-pole model shared by all three controllers. Every controller\'s force output saturates at 25 N.'},
+   methods:['One RK4 simulator and one set of limits for every controller (dt = 0.02 s, |F| ≤ 25 N, 10 s per run)','PID on pole angle plus cart position, with gains auto-tuned by Nelder–Mead','Discrete LQR from a numerical linearization at the upright position','PPO policy trained with Stable-Baselines3 in a Gymnasium environment; its reward is the same objective used to tune PID','Starting angles from ±5° to ±30° with 50 randomized initial states each, plus a 1° sweep to find each controller\'s limit angle','Metrics: angle RMSE, settling time, success rate, control effort (Σ F² Δt) and cart position RMSE'],
+   results:'All three controllers now run through the same evaluation pipeline. The comparison is being reviewed, and the results will be added here once they are final.',
+   next:'Report the comparison with consistent metrics, then repeat it under matched pulse disturbances and sensor noise.'},
+
+  {slug:'driving',title:'Autonomous Driving with ROS 2 & CARLA',category:'Robot Intelligence',cats:['ai'],subtitle:'Connecting sensing, planning and vehicle control.',description:'Explored autonomous driving integration using ROS 2, CARLA and perception/control pipelines.',tags:['ROS 2','CARLA','Planning'],status:'Completed',year:'2026',role:'Integration · Planning · Control',overview:'Autonomous driving combines perception, decision-making and low-level control into a single working loop. This project explored these system-level connections.',methods:['ROS 2-based robotics workflows','CARLA driving simulation','Sensor inputs including camera, LiDAR and IMU','Path tracking and behavior planning experiments'],results:'The work provided practical experience with the challenges of integrating multiple robotic software components.',next:'Explore systematic evaluation of path tracking and navigation safety across varied scenarios.'}
 ];
 
 // EDIT HERE: background music. Paste the song link from Spotify
@@ -31,6 +99,7 @@ const MUSIC = {
 const root = document.getElementById('site-content');
 
 /* ---------- Projects ---------- */
+const catsOf=p=>p.cats||[p.categoryId];
 function card(p){
   return `<a class="project-card" href="project.html?slug=${p.slug}" aria-label="Read ${p.title}"><div class="project-info"><div class="project-topline"><span class="tag">${p.category}</span><span class="status${p.paper?' published':''}">${p.status}</span></div><h3>${p.title}</h3><p>${p.description}</p><div class="project-foot"><div class="chips">${p.tags.map(t=>`<span class="chip">${t}</span>`).join('')}</div><span class="card-go" aria-hidden="true">↗</span></div></div></a>`;
 }
@@ -38,7 +107,7 @@ function mountProjects(){
   const el=document.getElementById('project-grid');if(!el)return;
   const filters=document.querySelectorAll('[data-filter]');const count=document.getElementById('project-count');
   function display(which){
-    const shown=which==='all'?PROJECTS:PROJECTS.filter(x=>x.categoryId===which);
+    const shown=which==='all'?PROJECTS:PROJECTS.filter(x=>catsOf(x).includes(which));
     el.innerHTML=shown.map(card).join('');
     if(count)count.textContent=`Showing ${shown.length} project${shown.length===1?'':'s'}`;
     filters.forEach(b=>{const on=b.dataset.filter===which;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false')});
@@ -46,32 +115,65 @@ function mountProjects(){
   filters.forEach(b=>b.addEventListener('click',()=>display(b.dataset.filter)));
   display('all');
 }
-function mountFeatured(){const el=document.getElementById('featured-projects');if(el)el.innerHTML=PROJECTS.slice(0,4).map(card).join('')}
+function mountFeatured(){const el=document.getElementById('featured-projects');if(el)el.innerHTML=PROJECTS.filter(p=>p.featured).map(card).join('')}
+const ext=(url,label,cls='button secondary')=>`<a class="${cls}" href="${url}" target="_blank" rel="noopener noreferrer">${label} <span class="arrow">↗</span></a>`;
+// Home page: the latest paper, built from the project that has `paper`.
+function mountPublication(){
+  const el=document.getElementById('latest-paper');if(!el)return;
+  const p=PROJECTS.find(x=>x.paper);if(!p){el.closest('section').hidden=true;return}
+  el.innerHTML=`<article class="pub-card"><div class="paper-venue">${p.paper.venue}</div><h3><a href="project.html?slug=${p.slug}">${p.title}</a></h3><p class="pub-authors">${p.paper.authors}</p><p class="pub-note">${p.paper.note||''}</p><div class="pub-links">${ext(p.paper.url,'Paper','button')}${(p.paper.links||[]).map(l=>ext(l.url,l.label)).join('')}<a class="button secondary" href="project.html?slug=${p.slug}">Results &amp; figures <span class="arrow">→</span></a></div></article>`;
+}
 function paperBlock(p){
   if(!p.paper)return '';
-  return `<section class="paper-box"><div class="paper-venue">Published in ${p.paper.venue}</div><h2>Abstract</h2><p>${p.paper.abstract}</p><a class="button" href="${p.paper.url}" target="_blank" rel="noopener noreferrer">Read the paper <span class="arrow">↗</span></a></section>`;
+  const q=p.paper;
+  return `<section class="paper-box"><div class="paper-venue">Published in ${q.venue}</div><p class="pub-authors">${q.authors}</p>${q.note?`<p class="pub-note">${q.note}</p>`:''}<h2>Abstract</h2><p>${q.abstract}</p><div class="pub-links">${ext(q.url,'Read the paper','button')}${(q.links||[]).map(l=>ext(l.url,l.label)).join('')}</div></section>`;
 }
 function img(m,lazy){return `<img src="${m.src}" alt="${m.alt}" width="${m.w}" height="${m.h}"${lazy?' loading="lazy"':''}>`}
+const paras=x=>x?(Array.isArray(x)?x:[x]).map(t=>`<p>${t}</p>`).join(''):'';
 function photoGallery(p){
   if(!p.photos)return '';
-  return `<div class="detail-gallery">${p.photos.map(m=>`<figure>${img(m)}<figcaption>${m.caption}</figcaption></figure>`).join('')}</div>`;
+  return `<div class="detail-gallery${p.photosFit==='contain'?' contain':''}">${p.photos.map(m=>`<figure>${img(m)}<figcaption>${m.caption}</figcaption></figure>`).join('')}</div>`;
 }
 function simFigure(p){
   if(!p.sim)return '';
   return `<figure class="figure-pair"><div>${p.sim.images.map(m=>img(m,true)).join('')}</div><figcaption>${p.sim.caption}</figcaption></figure>`;
 }
-function resultFigures(p){
-  if(!p.figures)return '';
-  return p.figures.map(m=>`<figure class="result-figure"><a href="${m.src}" target="_blank" rel="noopener" title="Open full size">${img(m,true)}</a><figcaption>${m.caption} <a href="${m.src}" target="_blank" rel="noopener">Open full size ↗</a></figcaption></figure>`).join('');
+const zoomFigure=m=>`<figure class="result-figure${m.narrow?' narrow':''}"><a href="${m.src}" target="_blank" rel="noopener" title="Open full size">${img(m,true)}</a><figcaption>${m.caption} <a href="${m.src}" target="_blank" rel="noopener">Open full size ↗</a></figcaption></figure>`;
+const figureList=list=>(list||[]).map(zoomFigure).join('');
+function diagram(p){
+  if(!p.diagram)return '';
+  return `<figure class="result-figure diagram">${img(p.diagram,true)}<figcaption>${p.diagram.caption}</figcaption></figure>`;
 }
+function specTiles(p){
+  if(!p.specs)return '';
+  return `<div class="spec-grid">${p.specs.items.map(([v,l])=>`<div class="spec"><b>${v}</b><span>${l}</span></div>`).join('')}</div>${p.specs.caption?`<p class="small-note">${p.specs.caption}</p>`:''}`;
+}
+function resultsTable(p){
+  const t=p.table;if(!t)return '';
+  const cell=v=>`<td${v===100?' class="hi"':v===0?' class="lo"':''}>${v}</td>`;
+  const body=t.groups.map(g=>`<tbody><tr class="group"><th colspan="${t.head.length}" scope="colgroup">${g.label}</th></tr>${g.rows.map(r=>`<tr><th scope="row">${r[0]}</th>${r.slice(1).map(cell).join('')}</tr>`).join('')}</tbody>`).join('');
+  return `<figure class="table-figure"><div class="table-wrap" tabindex="0" role="region" aria-label="Results table"><table class="result-table"><thead><tr>${t.head.map((h,i)=>`<th scope="col"${i?'':' class="task"'}>${h}</th>`).join('')}</tr></thead>${body}</table></div><figcaption>${t.caption}</figcaption></figure>`;
+}
+function findingCards(p){
+  if(!p.findings)return '';
+  return `<div class="finding-grid">${p.findings.map(f=>`<div class="finding"><h3>${f.title}</h3><p>${f.text}</p></div>`).join('')}</div>`;
+}
+function sideItem(label,value){return `<div class="item"><small>${label}</small><b>${value}</b></div>`}
 function mountDetail(){
   if(!root||document.body.dataset.page!=='detail')return;
-  const slug=new URLSearchParams(location.search).get('slug')||'gripper';const p=PROJECTS.find(p=>p.slug===slug);
+  const slug=new URLSearchParams(location.search).get('slug')||PROJECTS[0].slug;const p=PROJECTS.find(p=>p.slug===slug);
   if(!p){root.innerHTML='<div class="wrap page-hero"><h1>Project not found.</h1><p><a href="projects.html">Return to projects →</a></p></div>';return}
   document.title=`${p.title} — Janice Jungbin Min`;
-  const paperSide=p.paper?`<div class="item"><small>Publication</small><b><a class="side-link" href="${p.paper.url}" target="_blank" rel="noopener noreferrer">${p.paper.short} ↗</a></b></div>`:'';
-  const draftNote=p.figures?'':'<div class="notice">Portfolio draft: replace this section with your own plots, photos or videos when ready. Avoid reporting unverified metrics.</div>';
-  root.innerHTML=`<div class="wrap"><a class="detail-back" href="projects.html">← All projects</a><div class="detail-header"><div class="eyebrow">${p.category} · ${p.year}</div><h1>${p.title}</h1><p>${p.subtitle}</p></div>${photoGallery(p)}<div class="detail-layout"><div class="detail-body">${paperBlock(p)}<section><h2>Overview</h2><p>${p.overview}</p></section><section><h2>Approach & methods</h2><ul>${p.methods.map(m=>`<li>${m}</li>`).join('')}</ul>${simFigure(p)}</section><section><h2>Current results</h2><p>${p.results}</p>${resultFigures(p)}${draftNote}</section><section><h2>What's next</h2><p>${p.next}</p></section><a href="projects.html" class="button secondary">← Back to all projects</a></div><aside class="detail-side"><div class="item"><small>Year</small><b>${p.year}</b></div><div class="item"><small>Status</small><b>${p.status}</b></div>${paperSide}<div class="item"><small>My contribution</small><b>${p.role}</b></div><div class="item"><small>Tools / Topics</small><b>${p.tags.join(' · ')}</b></div></aside></div></div>`;
+  const link=(url,text)=>`<a class="side-link" href="${url}" target="_blank" rel="noopener noreferrer">${text} ↗</a>`;
+  const side=[
+    sideItem('Year',p.year),sideItem('Status',p.status),
+    p.paper?sideItem('Publication',link(p.paper.url,p.paper.short)):'',
+    p.org?sideItem('Where',p.org):'',
+    sideItem('My contribution',p.role),
+    ...(p.links||[]).map(l=>sideItem(l.label,link(l.url,l.text||l.label))),
+    sideItem('Tools / Topics',p.tags.join(' · '))
+  ].join('');
+  root.innerHTML=`<div class="wrap"><a class="detail-back" href="projects.html">← All projects</a><div class="detail-header"><div class="eyebrow">${p.category} · ${p.year}</div><h1${p.title.length>60?' class="long"':''}>${p.title}</h1><p>${p.subtitle}</p></div>${photoGallery(p)}<div class="detail-layout"><div class="detail-body">${paperBlock(p)}<section><h2>Overview</h2><p>${p.overview}</p>${diagram(p)}</section><section><h2>Approach & methods</h2><ul>${p.methods.map(m=>`<li>${m}</li>`).join('')}</ul>${figureList(p.methodFigures)}${simFigure(p)}${specTiles(p)}</section><section><h2>${p.resultsTitle||'Current results'}</h2>${paras(p.results)}${resultsTable(p)}${findingCards(p)}${figureList(p.figures)}</section><section><h2>What's next</h2><p>${p.next}</p></section><a href="projects.html" class="button secondary">← Back to all projects</a></div><aside class="detail-side">${side}</aside></div></div>`;
 }
 function markActiveNav(){
   const active=(location.pathname.split('/').pop()||'index.html');
@@ -81,7 +183,7 @@ function markActiveNav(){
     if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
   });
 }
-function renderPage(){mountFeatured();mountProjects();mountDetail();markActiveNav();mountHeroRecord()}
+function renderPage(){mountFeatured();mountPublication();mountProjects();mountDetail();markActiveNav();mountHeroRecord()}
 
 /* ---------- Music player (official Spotify embed) ---------- */
 const ICON={
