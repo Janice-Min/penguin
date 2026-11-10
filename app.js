@@ -100,7 +100,7 @@ const MUSIC = {
 // EDIT HERE: visitor statistics with GoatCounter (free for personal sites, no cookies).
 // Sign up at https://www.goatcounter.com using this exact code, then see visits at https://<code>.goatcounter.com
 // If you picked a different code there, change it here. Leave it '' to turn statistics off.
-const ANALYTICS = { goatcounter: 'janice-penguin' };
+const ANALYTICS = { goatcounter: 'janicemin' };
 
 const root = document.getElementById('site-content');
 
