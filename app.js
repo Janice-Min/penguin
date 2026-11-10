@@ -1,6 +1,7 @@
 // EDIT HERE: This is the main content file for your portfolio.
 // Fields used by the cards and detail pages:
 //   cats       filter ids: 'design' | 'ai' | 'control' (a project can have more than one)
+//   type       'research' = listed on the Research page; everything else is on the Projects page
 //   featured   true = shown on the home page
 //   org        where the work was done (side panel)
 //   paper      publication box: venue, authors (html), abstract, links
@@ -9,7 +10,7 @@
 //   links      extra links in the side panel, e.g. code repository
 const ME = '<strong>Jungbin Min*</strong>';
 const PROJECTS = [
-  {slug:'navigation',featured:true,title:'Before We Trust Them: Decision-Making Failures in Navigation of Foundation Models',category:'Robot Intelligence',cats:['ai'],
+  {slug:'navigation',type:'research',featured:true,title:'Before We Trust Them: Decision-Making Failures in Navigation of Foundation Models',category:'Robot Intelligence',cats:['ai'],
    subtitle:'When high success rates hide unreliable decisions: a diagnostic evaluation of LLMs and VLMs on navigation-related tasks.',
    description:'Co-first-authored paper showing that high success rates can hide unreliable navigation decisions by LLMs and VLMs.',
    tags:['LLM / VLM','Navigation','Safety evaluation'],status:'Published',year:'2026',
@@ -40,7 +41,7 @@ const PROJECTS = [
     {src:'assets/nav-back-of-building.png',w:1800,h:362,alt:'Four route maps drawn by models for the Back-of-the-Building task, each showing a different failure',caption:'Back-of-the-Building task: (a) structural collapse, (b) directional error, (c) constraint violation, (d) waypoint error. (Paper, Fig. 6)'}],
    next:'Scale the evaluation to more models, richer navigation inputs and more safety-critical scenarios, and test whether the same failures persist in interactive, real-world navigation.'},
 
-  {slug:'gripper',featured:true,title:'Tendon-driven Gripper Optimization',category:'Robot Design',cats:['design'],subtitle:'Searching for robotic hand designs that can grasp across a wider range of object sizes and positions.',description:'Designed a simulation workflow in MuJoCo to evaluate graspable workspace and optimize tendon-driven finger geometry.',tags:['MuJoCo','CMA-ES','Python'],status:'Ongoing',year:'2026',
+  {slug:'gripper',type:'research',featured:true,title:'Tendon-driven Gripper Optimization',category:'Robot Design',cats:['design'],subtitle:'Searching for robotic hand designs that can grasp across a wider range of object sizes and positions.',description:'Designed a simulation workflow in MuJoCo to evaluate graspable workspace and optimize tendon-driven finger geometry.',tags:['MuJoCo','CMA-ES','Python'],status:'Ongoing',year:'2026',
    org:'BEAR Lab, Sungkyunkwan University · undergraduate researcher',
    role:'Modeling · Experiment design · Optimization',overview:'How can we design an underactuated tendon-driven gripper that successfully grasps objects across different sizes and initial positions? This project explores the relationship between finger geometry, joint properties, and graspability.',methods:['Parameterized two-finger MJCF models with tendon actuation','Graspable Workspace Map over object radius and surface offset','Design variables including finger link lengths, opening angles, gap, and joint stiffness','Sensitivity studies and CMA-ES-based parameter search'],
    results:'The evaluation framework maps where each design grasps successfully. During the search, an optimized candidate already covered far more of the workspace than the baseline fingers on the eight object radii below (83 successful cells against 14), with the largest gains for objects of 30 to 50 mm radius. The final best design succeeds in 342 of the 15,225 measured cells and was then built as a 3D-printed prototype that holds a paper cup.',
@@ -105,6 +106,8 @@ const root = document.getElementById('site-content');
 
 /* ---------- Projects ---------- */
 const catsOf=p=>p.cats||[p.categoryId];
+const isResearch=p=>p.type==='research';
+const RESEARCH=PROJECTS.filter(isResearch), OTHER_PROJECTS=PROJECTS.filter(p=>!isResearch(p));
 function card(p){
   return `<a class="project-card" href="project.html?slug=${p.slug}" aria-label="Read ${p.title}"><div class="project-info"><div class="project-topline"><span class="tag">${p.category}</span><span class="status${p.paper?' published':''}">${p.status}</span></div><h3>${p.title}</h3><p>${p.description}</p><div class="project-foot"><div class="chips">${p.tags.map(t=>`<span class="chip">${t}</span>`).join('')}</div><span class="card-go" aria-hidden="true">↗</span></div></div></a>`;
 }
@@ -112,7 +115,7 @@ function mountProjects(){
   const el=document.getElementById('project-grid');if(!el)return;
   const filters=document.querySelectorAll('[data-filter]');const count=document.getElementById('project-count');
   function display(which){
-    const shown=which==='all'?PROJECTS:PROJECTS.filter(x=>catsOf(x).includes(which));
+    const shown=which==='all'?OTHER_PROJECTS:OTHER_PROJECTS.filter(x=>catsOf(x).includes(which));
     el.innerHTML=shown.map(card).join('');
     if(count)count.textContent=`Showing ${shown.length} project${shown.length===1?'':'s'}`;
     filters.forEach(b=>{const on=b.dataset.filter===which;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false')});
@@ -120,7 +123,10 @@ function mountProjects(){
   filters.forEach(b=>b.addEventListener('click',()=>display(b.dataset.filter)));
   display('all');
 }
-function mountFeatured(){const el=document.getElementById('featured-projects');if(el)el.innerHTML=PROJECTS.filter(p=>p.featured).map(card).join('')}
+function fill(id,list){const el=document.getElementById(id);if(el)el.innerHTML=list.map(card).join('')}
+// Home: research and projects in separate sections. Research page: every research item.
+function mountFeatured(){fill('featured-research',RESEARCH.filter(p=>p.featured));fill('featured-projects',OTHER_PROJECTS.filter(p=>p.featured))}
+function mountResearch(){fill('research-grid',RESEARCH)}
 const ext=(url,label,cls='button secondary')=>`<a class="${cls}" href="${url}" target="_blank" rel="noopener noreferrer">${label} <span class="arrow">↗</span></a>`;
 // Home page: the latest paper, built from the project that has `paper`.
 function mountPublication(){
@@ -169,6 +175,7 @@ function mountDetail(){
   const slug=new URLSearchParams(location.search).get('slug')||PROJECTS[0].slug;const p=PROJECTS.find(p=>p.slug===slug);
   if(!p){root.innerHTML='<div class="wrap page-hero"><h1>Project not found.</h1><p><a href="projects.html">Return to projects →</a></p></div>';return}
   document.title=`${p.title} — Janice Jungbin Min`;
+  const back=isResearch(p)?{href:'research.html',label:'research'}:{href:'projects.html',label:'projects'};
   const link=(url,text)=>`<a class="side-link" href="${url}" target="_blank" rel="noopener noreferrer">${text} ↗</a>`;
   const side=[
     sideItem('Year',p.year),sideItem('Status',p.status),
@@ -178,17 +185,18 @@ function mountDetail(){
     ...(p.links||[]).map(l=>sideItem(l.label,link(l.url,l.text||l.label))),
     sideItem('Tools / Topics',p.tags.join(' · '))
   ].join('');
-  root.innerHTML=`<div class="wrap"><a class="detail-back" href="projects.html">← All projects</a><div class="detail-header"><div class="eyebrow">${p.category} · ${p.year}</div><h1${p.title.length>60?' class="long"':''}>${p.title}</h1><p>${p.subtitle}</p></div>${photoGallery(p)}<div class="detail-layout"><div class="detail-body">${paperBlock(p)}<section><h2>Overview</h2><p>${p.overview}</p>${diagram(p)}</section><section><h2>Approach & methods</h2><ul>${p.methods.map(m=>`<li>${m}</li>`).join('')}</ul>${figureList(p.methodFigures)}${simFigure(p)}${specTiles(p)}</section><section><h2>${p.resultsTitle||'Current results'}</h2>${paras(p.results)}${resultsTable(p)}${findingCards(p)}${figureList(p.figures)}</section><section><h2>What's next</h2><p>${p.next}</p></section><a href="projects.html" class="button secondary">← Back to all projects</a></div><aside class="detail-side">${side}</aside></div></div>`;
+  root.innerHTML=`<div class="wrap"><a class="detail-back" href="${back.href}">← All ${back.label}</a><div class="detail-header"><div class="eyebrow">${p.category} · ${p.year}</div><h1${p.title.length>60?' class="long"':''}>${p.title}</h1><p>${p.subtitle}</p></div>${photoGallery(p)}<div class="detail-layout"><div class="detail-body">${paperBlock(p)}<section><h2>Overview</h2><p>${p.overview}</p>${diagram(p)}</section><section><h2>Approach & methods</h2><ul>${p.methods.map(m=>`<li>${m}</li>`).join('')}</ul>${figureList(p.methodFigures)}${simFigure(p)}${specTiles(p)}</section><section><h2>${p.resultsTitle||'Current results'}</h2>${paras(p.results)}${resultsTable(p)}${findingCards(p)}${figureList(p.figures)}</section><section><h2>What's next</h2><p>${p.next}</p></section><a href="${back.href}" class="button secondary">← Back to all ${back.label}</a></div><aside class="detail-side">${side}</aside></div></div>`;
 }
 function markActiveNav(){
-  const active=(location.pathname.split('/').pop()||'index.html');
+  let active=(location.pathname.split('/').pop()||'index.html');
+  if(active==='project.html'){const p=PROJECTS.find(x=>x.slug===new URLSearchParams(location.search).get('slug'))||PROJECTS[0];active=isResearch(p)?'research.html':'projects.html'}
   document.querySelectorAll('.nav a').forEach(a=>{
-    const on=a.getAttribute('href')===active||(active==='project.html'&&a.getAttribute('href')==='projects.html');
+    const on=a.getAttribute('href')===active;
     a.classList.toggle('active',on);
     if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
   });
 }
-function renderPage(){mountFeatured();mountPublication();mountProjects();mountDetail();markActiveNav();mountHeroRecord()}
+function renderPage(){mountFeatured();mountResearch();mountPublication();mountProjects();mountDetail();markActiveNav();mountHeroRecord()}
 
 /* ---------- Music player (official Spotify embed) ---------- */
 const ICON={

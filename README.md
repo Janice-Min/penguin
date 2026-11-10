@@ -13,7 +13,7 @@ A responsive, bright, minimal portfolio with a small penguin mascot. Built with 
 
 ## Edit the content
 
-1. **Projects:** edit `PROJECTS` in `app.js`. The comment at the top lists every field. `featured: true` puts a project on the home page, `cats` sets the filter tabs, and `paper`, `table`, `findings`, `specs`, `diagram`, `methodFigures`, `figures` and `links` add the extra blocks you see on the detail pages.
+1. **Projects:** edit `PROJECTS` in `app.js`. The comment at the top lists every field. `type: 'research'` lists an item on the Research page (and in the home page's Research section) instead of Projects, `featured: true` puts it on the home page, `cats` sets the filter tabs, and `paper`, `table`, `findings`, `specs`, `diagram`, `methodFigures`, `figures` and `links` add the extra blocks you see on the detail pages.
 2. **Latest publication on the home page:** built automatically from the project that has `paper`.
 3. **Home, About, Research and CV pages:** edit the text directly in the relevant `.html` file.
 4. **Accent colors:** change CSS variables near the top of `style.css`.

@@ -267,3 +267,7 @@ body:not([data-page="index"]) .music-card[data-state="idle"] .music-cover{displa
 .section.wrap{padding-left:38px;padding-right:38px}
 @media(max-width:950px){.section.wrap{padding-left:25px;padding-right:25px}}
 @media(max-width:720px){.section.wrap{padding-left:20px;padding-right:20px}}
+
+/* Inline text link (e.g. Projects page intro) */
+.inline-link{color:var(--deep);font-weight:700;text-decoration:underline;text-decoration-color:#9fd3c3;text-decoration-thickness:2px;text-underline-offset:4px}
+.inline-link:hover{text-decoration-color:currentColor}
