@@ -96,6 +96,11 @@ const MUSIC = {
   spotifyUrl: 'https://open.spotify.com/track/1gq1gf44tZ9cyTdlcyoJd1'
 };
 
+// EDIT HERE: visitor statistics with GoatCounter (free for personal sites, no cookies).
+// Sign up at https://www.goatcounter.com using this exact code, then see visits at https://<code>.goatcounter.com
+// If you picked a different code there, change it here. Leave it '' to turn statistics off.
+const ANALYTICS = { goatcounter: 'janice-penguin' };
+
 const root = document.getElementById('site-content');
 
 /* ---------- Projects ---------- */
@@ -318,7 +323,7 @@ async function goTo(href,push){
     root.innerHTML=next.innerHTML;
     const nav=document.querySelector('.nav'),toggle=document.querySelector('.mobile-toggle');
     if(nav)nav.classList.remove('open');if(toggle)toggle.setAttribute('aria-expanded','false');
-    renderPage();
+    renderPage();countVisit();
     const hash=new URL(href).hash;const target=hash&&document.getElementById(hash.slice(1));
     if(target)target.scrollIntoView();else window.scrollTo(0,0);
     root.focus({preventScroll:true});
@@ -338,8 +343,29 @@ function mountSoftNavigation(){
   window.addEventListener('popstate',e=>{if(e.state&&e.state.soft)goTo(location.href,false)});
 }
 
+/* ---------- Visitor statistics (GoatCounter) ---------- */
+// Counts one view per page, including pages opened while the music keeps playing
+// (those swap content without a reload, so they are counted by hand).
+const stats={ready:false,last:''};
+function countVisit(){
+  const path=location.pathname.replace(/\/index\.html$/,'/')+location.search; // '/' and '/index.html' count as one page
+  if(!stats.ready||path===stats.last)return;
+  stats.last=path;
+  try{window.goatcounter.count({path,title:document.title})}catch(e){}
+}
+function mountAnalytics(){
+  const code=String(ANALYTICS.goatcounter||'').trim();
+  if(!code||!/^https?:$/.test(location.protocol))return;
+  const endpoint=`https://${code}.goatcounter.com/count`;
+  window.goatcounter=Object.assign(window.goatcounter||{},{no_onload:true,endpoint});
+  const s=document.createElement('script');s.async=true;s.src='https://gc.zgo.at/count.js';s.dataset.goatcounter=endpoint;
+  s.onload=()=>{stats.ready=true;countVisit()};
+  document.head.appendChild(s);
+}
+
 /* ---------- Init ---------- */
 function init(){
+  mountAnalytics();
   mountMusic();
   renderPage();
   const toggle=document.querySelector('.mobile-toggle');const nav=document.querySelector('.nav');

@@ -21,6 +21,10 @@ A responsive, bright, minimal portfolio with a small penguin mascot. Built with 
 6. **Contact:** the email address appears in the footer of every page and in the CV page's Contact row.
 7. **Home hero:** the record player with a small polaroid of Janice (`assets/janice-polaroid.jpg`, the full photo resized, location data removed). Its size and tilt are in the "Hero: a small polaroid" block near the end of `style.css`. Link previews (`og:image`) use the penguin, `assets/penguin-portrait.jpg`.
 
+## Visitor statistics
+
+Visits are counted with [GoatCounter](https://www.goatcounter.com) (no cookies). The code is `ANALYTICS.goatcounter` near the top of `app.js` (`'janice-penguin'`), and the dashboard is at https://janice-penguin.goatcounter.com. If the GoatCounter account uses a different code, change that one line. Set it to `''` to turn statistics off. Visits from `localhost` are not counted.
+
 ## Preview locally
 
 Open `index.html` directly in a browser, or from this folder run:
