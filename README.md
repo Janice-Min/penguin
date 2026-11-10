@@ -19,7 +19,7 @@ A responsive, bright, minimal portfolio with a small penguin mascot. Built with 
 4. **Accent colors:** change CSS variables near the top of `style.css`.
 5. **Images:** live in `assets/`. Paper figures are `nav-*.png`, the drink tray is `tray-*`, and the cart-pole drawing is `cartpole.svg` (plain SVG, editable in any text editor).
 6. **Contact:** the email address appears in the footer of every page and in the CV page's Contact row.
-7. **Home hero:** the record player with a small polaroid of Janice (`assets/janice-polaroid.jpg`, the full photo resized, location data removed). Its size and tilt are in the "Hero: a small polaroid" block near the end of `style.css`. `assets/janice-og.jpg` is the image for link previews.
+7. **Home hero:** the record player with a small polaroid of Janice (`assets/janice-polaroid.jpg`, the full photo resized, location data removed). Its size and tilt are in the "Hero: a small polaroid" block near the end of `style.css`. Link previews (`og:image`) use the penguin, `assets/penguin-portrait.jpg`.
 
 ## Preview locally
 
