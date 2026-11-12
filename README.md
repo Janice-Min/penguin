@@ -9,17 +9,21 @@ A responsive, bright, minimal portfolio with a small penguin mascot. Built with 
 - `project.html?slug=gripper`: Reusable detail page for each project (shows the paper and abstract when a project has `paper`)
 - `research.html`: Research areas and working style
 - `about.html`: About, experience and skills
-- `cv.html`: Browser-readable CV and contact. Use **Print / Save CV as PDF**.
+- `cv.html`: Browser-readable CV and contact. The **Download CV (PDF)** button downloads `Jungbin_Janice_Min_CV.pdf` from the repository root; replace that file to update it.
 
 ## Edit the content
 
-1. **Project names, descriptions, methods and results:** edit `PROJECTS` in `app.js`.
-2. **Home, About, Research and CV pages:** edit the text directly in the relevant `.html` file.
-3. **Accent colors:** change CSS variables near the top of `style.css`.
-4. **Illustrations / penguin:** images live in `assets/`. Project cards are text-only.
-5. **CV:** verify every entry before publishing. Add email details and your actual CV PDF when ready. Current CV page can be saved as PDF with the Print button.
+1. **Projects:** edit `PROJECTS` in `app.js`. The comment at the top lists every field. `type: 'research'` lists an item on the Research page (and in the home page's Research section) instead of Projects, `featured: true` puts it on the home page, `cats` sets the filter tabs, and `paper`, `table`, `findings`, `specs`, `diagram`, `methodFigures`, `figures` and `links` add the extra blocks you see on the detail pages.
+2. **Latest publication on the home page:** built automatically from the project that has `paper`.
+3. **Home, About, Research and CV pages:** edit the text directly in the relevant `.html` file.
+4. **Accent colors:** change CSS variables near the top of `style.css`.
+5. **Images:** live in `assets/`. Paper figures are `nav-*.png`, the drink tray is `tray-*`, and the cart-pole drawing is `cartpole.svg` (plain SVG, editable in any text editor).
+6. **Contact:** the email address appears in the footer of every page and in the CV page's Contact row.
+7. **Home hero:** the record player with a small polaroid of Janice (`assets/janice-polaroid.jpg`, the full photo resized, location data removed). Its size and tilt are in the "Hero: a small polaroid" block near the end of `style.css`. Link previews (`og:image`) use the penguin, `assets/penguin-portrait.jpg`.
 
-The home hero is a CSS/SVG record player with a strawberry (`assets/strawberry.svg`) as the record label. Tapping the record plays the song.
+## Visitor statistics
+
+Visits are counted with [GoatCounter](https://www.goatcounter.com) (no cookies). The code is `ANALYTICS.goatcounter` near the top of `app.js` (`'janice-penguin'`), and the dashboard is at https://janice-penguin.goatcounter.com. If the GoatCounter account uses a different code, change that one line. Set it to `''` to turn statistics off. Visits from `localhost` are not counted.
 
 ## Preview locally
 
@@ -45,9 +49,9 @@ The record on the home page and the floating music card (bottom left) play CHUU'
 
 ### Suggested next iterations
 
-- Add verified result graphs and role details on project pages.
-- Attach a PDF CV and contact email (if desired).
-- Add writing / notes only after the essential portfolio is polished.
+- Add the cart-pole comparison results once they are final.
+- Add the drink tray prototype photos and stair test results.
+- Add a Google Scholar link once the profile exists.
 - Optionally set up a custom domain.
 
 
