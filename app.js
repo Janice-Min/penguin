@@ -198,96 +198,161 @@ function markActiveNav(){
 }
 function renderPage(){mountFeatured();mountResearch();mountPublication();mountProjects();mountDetail();markActiveNav();mountHeroRecord();mountPenguinSky()}
 
-/* ---------- Home: flying penguins ---------- */
-// Little emperor chicks drawn in SVG. Edit FLOCK to change how many fly, their size, height and speed.
-// top: height in the sky · size: px · dur: seconds to cross · delay: negative = already mid-flight on load
-// topSm: height on phones (optional) · rev: flies right to left · front: flies in front of the text (keep these out of the paragraph's height) · rest: where it waits (still) for visitors who turn off animations · hideSm: hidden on phones
+/* ---------- Home: waddling penguins ---------- */
+// Little emperor chicks drawn in SVG. They waddle around the snowy yard under the hero, stop and look around,
+// pop in and out of the igloo, and hop when tapped. Knocking on the igloo brings out another one.
+// YARD: who lives there. gear = what it wears, w = width in px, x = where it starts (0 = left edge, 1 = right edge), hideSm = not on phones.
+const YARD=[
+  {gear:'plain', w:70,x:.16},
+  {gear:'phones',w:62,x:.44},
+  {gear:'scarf', w:74,x:.66,hideSm:true}
+];
+const YARD_MAX=7; // most penguins in the yard at once (knocking adds more up to this)
+const SPAWN_GEARS=['bow','beanie','plain','phones','scarf'];
+const PEEPS=['hi!','peep!','welcome!','hehe','♡','waddle waddle','peep peep'];
 const PENGUIN_GEAR={
   plain:{},
   beanie:{front:'<path d="M37 33C37 12 83 12 83 33Z" fill="#8fb3cf"/><path d="M49 31V19M60 30V15M71 31V19" stroke="#7ba3c4" stroke-width="1.8" stroke-linecap="round"/><rect x="35" y="29" width="50" height="8" rx="4" fill="#7ba3c4"/><circle cx="60" cy="13" r="5.5" fill="#fff"/>'},
-  scarf:{under:'<path d="M45 60C35 63 25 60 14 67L18 73C28 68 37 70 48 65Z" fill="#7cc0ac"/>',front:'<path d="M39 56Q60 66 81 56L81 62.5Q60 73 39 62.5Z" fill="#8dc7b7"/>'},
-  phones:{front:'<path d="M38 40C38 15 82 15 82 40" fill="none" stroke="#f48aa6" stroke-width="4.5" stroke-linecap="round"/><rect x="32" y="35" width="10" height="14" rx="4.5" fill="#f48aa6"/><rect x="78" y="35" width="10" height="14" rx="4.5" fill="#f48aa6"/>'},
+  scarf:{under:'<path d="M45 60C35 63 25 60 14 67L18 73C28 68 37 70 48 65Z" fill="#7cc0ac"/>',front:'<path d="M37 56Q60 66 84 56L84 62.5Q60 73 37 62.5Z" fill="#8dc7b7"/>'},
+  phones:{front:'<path d="M39 40C39 15 83 15 83 40" fill="none" stroke="#f48aa6" stroke-width="4.5" stroke-linecap="round"/><rect x="33" y="35" width="10" height="14" rx="4.5" fill="#f48aa6"/><rect x="79" y="35" width="9" height="13" rx="4.5" fill="#e97d9c"/>'},
   bow:{front:'<g transform="translate(74 21) rotate(18)"><path d="M0 0L-9-5.5Q-11.5 0-9 5.5ZM0 0L9-5.5Q11.5 0 9 5.5Z" fill="#f48aa6"/><circle r="2.8" fill="#e2668b"/></g>'}
 };
+// Three-quarter view, facing right (CSS mirrors it to face left).
 function penguinSVG(gear){
   const g=PENGUIN_GEAR[gear]||{};
-  return `<svg class="pg" viewBox="0 0 120 110" aria-hidden="true" focusable="false">${g.under||''}<path class="flap-l" d="M36 60C25 53 12 55 5 64C15 69 27 69 37 71Z"/><path class="flap-r" d="M84 60C95 53 108 55 115 64C105 69 93 69 83 71Z"/><ellipse cx="51" cy="96" rx="6.5" ry="3.4" fill="#f2a27a"/><ellipse cx="69" cy="96" rx="6.5" ry="3.4" fill="#f2a27a"/><ellipse cx="60" cy="67" rx="27" ry="30" fill="#b4bdc6"/><ellipse cx="60" cy="74" rx="17.5" ry="20" fill="#dfe4e8"/><circle cx="60" cy="40" r="23" fill="#203044"/><path d="M60 36C53 29 41 30.5 40 41C39 51 48 57 60 56C72 57 81 51 80 41C79 30.5 67 29 60 36Z" fill="#fff"/><circle cx="51.5" cy="42" r="3.3" fill="#203044"/><circle cx="68.5" cy="42" r="3.3" fill="#203044"/><circle cx="52.6" cy="40.8" r="1.1" fill="#fff"/><circle cx="69.6" cy="40.8" r="1.1" fill="#fff"/><path d="M56.5 47Q60 45 63.5 47Q60 53 56.5 47Z" fill="#203044"/><ellipse cx="46" cy="49" rx="3.6" ry="2.2" fill="#ffb5c5"/><ellipse cx="74" cy="49" rx="3.6" ry="2.2" fill="#ffb5c5"/>${g.front||''}</svg>`;
+  return `<svg class="pg" viewBox="0 0 120 110" aria-hidden="true" focusable="false">${g.under||''}<ellipse class="foot foot-b" cx="68" cy="97" rx="7" ry="3.6" fill="#e3916a"/><ellipse class="foot foot-f" cx="52" cy="97.5" rx="7.5" ry="3.8" fill="#f2a27a"/><path d="M80 60C88 66 90 76 86 84C83 78 80 72 78 66Z" fill="#8e99a5"/><ellipse cx="60" cy="67" rx="26" ry="30" fill="#b4bdc6"/><ellipse cx="65" cy="74" rx="16" ry="20" fill="#dfe4e8"/><path class="flip-near" d="M39 56C31 64 30 76 34 85C38 79 42 71 44 62Z" fill="#97a2ad"/><circle cx="61" cy="40" r="22.5" fill="#203044"/><path d="M66 36C60 29.5 49.5 31 49 41C48.5 50.5 57 56.5 66 55.5C75 56 82.5 50 82 41C81.5 31 72 29.5 66 36Z" fill="#fff"/><g class="eyes"><circle cx="59" cy="42" r="3.2" fill="#203044"/><circle cx="74.5" cy="42" r="2.9" fill="#203044"/><circle cx="60" cy="40.9" r="1.05" fill="#fff"/><circle cx="75.3" cy="40.9" r=".95" fill="#fff"/></g><path d="M65 46.5Q72 45.5 79.5 48.5Q71.5 53 65 49Z" fill="#203044"/><ellipse cx="54.5" cy="49.5" rx="3.4" ry="2.1" fill="#ffb5c5"/><ellipse cx="79.5" cy="50" rx="2.3" ry="1.8" fill="#ffb5c5"/>${g.front||''}</svg>`;
 }
-const FLOCK=[
-  {gear:'plain', top:'6%', topSm:'3.4%',size:66,dur:27,delay:-4, flap:.34,amp:14,drift:6, front:true,rest:'47%'},
-  {gear:'bow',   top:'17%',size:42,dur:21,delay:-15,flap:.26,amp:12,drift:5, front:true,rev:true,hideSm:true},
-  {gear:'phones',top:'37%',topSm:'17%',size:54,dur:34,delay:-27,flap:.3, amp:18,drift:8, front:true},
-  {gear:'beanie',top:'77%',size:76,dur:40,delay:-12,flap:.42,amp:14,drift:9, rev:true},
-  {gear:'scarf', top:'95%',topSm:'97.6%',size:62,dur:30,delay:-17,flap:.36,amp:8, drift:7, front:true,rest:'52%'}
-];
+const IGLOO_SVG='<svg viewBox="0 0 140 92" aria-hidden="true" focusable="false"><defs><clipPath id="igloo-dome"><path d="M6 88C6 42 36 12 70 12S134 42 134 88Z"/></clipPath><linearGradient id="igloo-door" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffeccf"/><stop offset="1" stop-color="#f6c48f"/></linearGradient></defs><ellipse cx="70" cy="88" rx="68" ry="4" fill="#e2efea"/><path d="M6 88C6 42 36 12 70 12S134 42 134 88Z" fill="#fff"/><g clip-path="url(#igloo-dome)" fill="none" stroke="#dcebe5" stroke-width="2" stroke-linecap="round"><path d="M0 70H140M0 52H140M0 35H140M0 21H140"/><path d="M24 88V70M116 88V70M40 70V52M70 70V52M100 70V52M54 52V35M88 52V35M120 52V35M20 52V35M44 35V21M72 35V21M98 35V21M60 21V12M84 21V12"/></g><path d="M6 88C6 42 36 12 70 12S134 42 134 88Z" fill="none" stroke="#d3e6de" stroke-width="2.5"/><path d="M46 88V69C46 52 94 52 94 69V88Z" fill="#fff" stroke="#d3e6de" stroke-width="2.5"/><path d="M56 88V72C56 61 84 61 84 72V88Z" fill="url(#igloo-door)"/><path d="M70 45.5C68 42 62.5 43 63.5 47.2C64.4 50.6 70 53 70 53S75.6 50.6 76.5 47.2C77.5 43 72 42 70 45.5Z" fill="#f48aa6"/></svg>';
+const SNOW_SVG='<svg class="yard-snow" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 13C120 9 230 15 350 12S570 7 710 11 950 16 1070 10 1200 12 1200 12V40H0Z" fill="#e9f4f0"/><path d="M0 13C120 9 230 15 350 12S570 7 710 11 950 16 1070 10 1200 12 1200 12" fill="none" stroke="#fff" stroke-width="2.5" vector-effect="non-scaling-stroke"/></svg>';
 const CLOUDS=[
   {top:'4%', size:150,dur:95, delay:-30,c:'#ecf6f2'},
-  {top:'50%',size:110,dur:120,delay:-85,c:'#fdeef2'},
-  {top:'86%',size:170,dur:140,delay:-20,c:'#eef3f8'}
+  {top:'48%',size:110,dur:120,delay:-85,c:'#fdeef2'},
+  {top:'74%',size:170,dur:140,delay:-20,c:'#eef3f8'}
 ];
-const PEEPS=['hi!','peep!','wheee~','♡','welcome!','hehe','peep peep'];
 const SPARK_COLORS=['#f4a9bd','#8dc7b7','#f3c47c','#9ec3e0'];
-// Sparkles sit in the margins, the gap between the columns and the top/bottom bands, so none land behind text. [x%, y%, size px, color, hide on phones]
-const SPARKS=[[2,12,14,0],[5,38,11,1,1],[3,66,16,2,1],[6,88,12,3],[97,9,12,1],[95,30,16,0,1],[98,58,11,3,1],[94,90,15,2],[52,24,12,2,1],[53,52,15,0,1],[51,78,11,1,1],[24,4,11,3],[68,6,15,0],[83,3,12,2],[36,97,13,1],[74,96,11,0]];
+// Sparkles sit in the margins, the gap between the columns and the top band, so none land behind text. [x%, y%, size px, color, hide on phones]
+const SPARKS=[[2,12,14,0],[5,38,11,1,1],[3,64,16,2,1],[4,80,12,3],[97,9,12,1],[95,30,16,0,1],[98,56,11,3,1],[96,76,15,2],[52,24,12,2,1],[53,50,15,0,1],[51,72,11,1,1],[24,4,11,3],[68,6,15,0],[83,3,12,2]];
 const STAR_SVG='<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 0C11 6 14 9 20 10C14 11 11 14 10 20C9 14 6 11 0 10C6 9 9 6 10 0Z" fill="currentColor"/></svg>';
-const sky={observer:null};
 const CLOUD_SVG='<svg viewBox="0 0 120 50" aria-hidden="true"><path d="M20 46C5 46 3 29 17 27C17 12 38 8 46 20C52 5 79 6 82 22C97 16 113 27 105 39C113 43 109 48 100 48Z" fill="currentColor"/></svg>';
 function reduceMotion(){return !!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)}
-function mountPenguinSky(){
-  if(sky.observer){sky.observer.disconnect();sky.observer=null}
-  const el=document.querySelector('.penguin-sky');if(!el)return;
-  const clouds=CLOUDS.map(c=>`<span class="cloud" style="--top:${c.top};--size:${c.size}px;--dur:${c.dur}s;--delay:${c.delay}s;--c:${c.c}">${CLOUD_SVG}</span>`).join('');
-  const sparks=SPARKS.map(([x,y,sz,c,sm],i)=>`<span class="spark${sm?' hide-sm':''}" style="--x:${x}%;--y:${y}%;--s:${sz}px;--c:${SPARK_COLORS[c]};--t:${3+(i%5)*.7}s;--d:${-(i*.9)}s">${STAR_SVG}</span>`).join('');
-  const flock=FLOCK.map(f=>{
-    const vars=`--top:${f.top};${f.topSm?`--top-sm:${f.topSm};`:''}--size:${f.size}px;--dur:${f.dur}s;--delay:${f.delay}s;--flap:${f.flap}s;--amp:${f.amp}px;--drift:${f.drift}s;--lean:${f.rev?-1:1}${f.rest?`;--rest:${f.rest}`:''}`;
-    return `<span class="fly${f.rev?' rev':''}${f.front?' front':''}${f.hideSm?' hide-sm':''}" style="${vars}"><span class="fly-drift"><span class="fly-bob"><span class="fly-body">${penguinSVG(f.gear)}</span></span></span></span>`;
-  }).join('');
-  el.innerHTML=clouds+sparks+flock;
-  if('IntersectionObserver' in window){
-    sky.observer=new IntersectionObserver(([e])=>el.classList.toggle('is-paused',!e.isIntersecting));
-    sky.observer.observe(el);
+
+const waddle={list:[],raf:0,last:0,io:null};
+function placeWaddler(p){p.el.style.transform=`translate3d(${p.x.toFixed(1)}px,0,0)`}
+function makeWaddler(track,gear,w,x){
+  const el=document.createElement('span');
+  el.className='waddler';
+  el.style.setProperty('--w',w+'px');
+  el.style.setProperty('--blink',(-Math.random()*4).toFixed(2)+'s');
+  el.style.setProperty('--step',(.3+Math.random()*.1).toFixed(2)+'s');
+  el.innerHTML=`<span class="waddler-hop">${penguinSVG(gear)}</span>`;
+  track.appendChild(el);
+  const p={el,track,w,x:Math.max(0,x),target:x,speed:22+Math.random()*14,dir:Math.random()<.5?1:-1,state:'idle',wait:.6+Math.random()*2.8,goInside:false};
+  el.classList.toggle('face-left',p.dir<0);
+  placeWaddler(p);waddle.list.push(p);
+  return p;
+}
+function iglooOf(p){const yard=p.track.closest('.penguin-yard');return yard&&yard.querySelector('.igloo')}
+function doorX(ig,p){return ig.offsetLeft+ig.offsetWidth/2-p.w/2}
+function pickNext(p,W,leavingIgloo){
+  const max=Math.max(0,W-p.w),ig=iglooOf(p);
+  if(ig&&!leavingIgloo&&Math.random()<.22){p.target=Math.min(max,doorX(ig,p));p.goInside=true}
+  else{
+    let t=Math.random()*max;
+    if(Math.abs(t-p.x)<70)t=p.x+(Math.random()<.5?-1:1)*(90+Math.random()*140);
+    p.target=Math.max(0,Math.min(max,t));p.goInside=false;
   }
+  p.state='walk';p.dir=p.target>=p.x?1:-1;
+  p.el.classList.add('is-walking');p.el.classList.toggle('face-left',p.dir<0);
 }
-function peep(host){
-  const old=host.querySelector(':scope > .peep');if(old)old.remove();
-  const b=document.createElement('span');b.className='peep';b.textContent=PEEPS[Math.floor(Math.random()*PEEPS.length)];
-  const skyEl=host.closest('.penguin-sky');
-  if(skyEl&&host.getBoundingClientRect().top-skyEl.getBoundingClientRect().top<44)b.classList.add('below'); // no room above: show it underneath
-  host.appendChild(b);setTimeout(()=>b.remove(),1400);
-}
-function launchPenguin(el,x,y){
-  if(reduceMotion()||!el.animate||el.querySelectorAll('.launch').length>=6)return;
-  const gears=Object.keys(PENGUIN_GEAR);
-  const p=document.createElement('span');p.className='launch';p.style.left=x+'px';p.style.top=y+'px';
-  p.innerHTML=penguinSVG(gears[Math.floor(Math.random()*gears.length)]);
-  const dir=x<el.clientWidth/2?1:-1;if(dir<0)p.classList.add('rev');
-  el.appendChild(p);
-  const dx=dir*(220+Math.random()*260),dy=-(y+140);
-  p.animate([
-    {transform:'translate(-50%,-50%) scale(.2)',opacity:0},
-    {transform:`translate(-50%,-90%) scale(1.1) rotate(${dir*-10}deg)`,opacity:1,offset:.14},
-    {transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(.85) rotate(${dir*16}deg)`,opacity:1}
-  ],{duration:2600,easing:'cubic-bezier(.4,.1,.5,1)'}).onfinish=()=>p.remove();
-}
-function mountPenguinTaps(){
-  document.addEventListener('click',e=>{
-    const body=e.target.closest('.fly-body');
-    if(body){
-      body.classList.remove('boop');void body.offsetWidth;body.classList.add('boop');
-      body.addEventListener('animationend',()=>body.classList.remove('boop'),{once:true});
-      peep(body.closest('.fly-drift'));return;
+function waddleTick(t){
+  waddle.list=waddle.list.filter(p=>p.el.isConnected);
+  const live=waddle.list.filter(p=>p.track.dataset.on!=='0');
+  if(!live.length){waddle.raf=0;return}
+  const dt=waddle.last?Math.min(.05,(t-waddle.last)/1000):0;waddle.last=t;
+  const widths=new Map();
+  live.forEach(p=>{if(!widths.has(p.track))widths.set(p.track,p.track.clientWidth)}); // read all sizes first, then move
+  live.forEach(p=>{
+    const W=widths.get(p.track),max=Math.max(0,W-p.w);
+    if(p.state==='walk'){
+      p.x+=p.speed*dt*p.dir;
+      if((p.dir>0&&p.x>=p.target)||(p.dir<0&&p.x<=p.target)){
+        p.x=p.target;p.el.classList.remove('is-walking');
+        if(p.goInside){p.state='inside';p.el.classList.add('is-inside');p.wait=2.5+Math.random()*4}
+        else{p.state='idle';p.wait=1+Math.random()*3.5;if(Math.random()<.45){p.dir*=-1;p.el.classList.toggle('face-left',p.dir<0)}} // look around
+      }
+    }else{
+      p.wait-=dt;
+      if(p.wait<=0){const out=p.state==='inside';if(out)p.el.classList.remove('is-inside');pickNext(p,W,out)}
     }
-    const walker=e.target.closest('.walker-pg');
-    if(walker){peep(walker.parentElement);return}
-    const el=e.target.closest('.penguin-sky');
-    if(el){const r=el.getBoundingClientRect();launchPenguin(el,e.clientX-r.left,e.clientY-r.top)}
+    p.x=Math.max(0,Math.min(max,p.x));placeWaddler(p);
   });
+  waddle.raf=requestAnimationFrame(waddleTick);
+}
+function startWaddling(){
+  if(reduceMotion()||waddle.raf||!waddle.list.length)return;
+  waddle.last=0;waddle.raf=requestAnimationFrame(waddleTick);
+}
+function watchTrack(track){
+  if(!('IntersectionObserver' in window))return;
+  if(!waddle.io)waddle.io=new IntersectionObserver(es=>{es.forEach(e=>{e.target.dataset.on=e.isIntersecting?'1':'0';if(!e.target.isConnected)waddle.io.unobserve(e.target)});startWaddling()},{rootMargin:'80px'});
+  waddle.io.observe(track);
+}
+function mountPenguinSky(){
+  const sky=document.querySelector('.penguin-sky');
+  if(sky){
+    const clouds=CLOUDS.map(c=>`<span class="cloud" style="--top:${c.top};--size:${c.size}px;--dur:${c.dur}s;--delay:${c.delay}s;--c:${c.c}">${CLOUD_SVG}</span>`).join('');
+    const sparks=SPARKS.map(([x,y,sz,c,sm],i)=>`<span class="spark${sm?' hide-sm':''}" style="--x:${x}%;--y:${y}%;--s:${sz}px;--c:${SPARK_COLORS[c]};--t:${3+(i%5)*.7}s;--d:${-(i*.9)}s">${STAR_SVG}</span>`).join('');
+    sky.innerHTML=clouds+sparks;
+  }
+  const yard=document.querySelector('.penguin-yard');if(!yard)return;
+  const hint=yard.querySelector('.yard-hint');
+  yard.innerHTML=`${SNOW_SVG}<span class="igloo" aria-hidden="true">${IGLOO_SVG}</span><div class="yard-track" aria-hidden="true"></div>`;
+  if(hint)yard.appendChild(hint);
+  const track=yard.querySelector('.yard-track');
+  const small=!!(window.matchMedia&&matchMedia('(max-width: 720px)').matches);
+  const W=track.clientWidth;
+  YARD.forEach(c=>{if(c.hideSm&&small)return;const w=small?Math.round(c.w*.82):c.w;makeWaddler(track,c.gear,w,c.x*(W-w))});
+  watchTrack(track);startWaddling();
 }
 function mountFooterPenguin(){
   const f=document.querySelector('.footer');if(!f||f.querySelector('.footer-walk'))return;
   const w=document.createElement('div');w.className='footer-walk';w.setAttribute('aria-hidden','true');
-  w.innerHTML=`<div class="walk-track"><div class="walker"><span class="walker-pg">${penguinSVG('beanie')}</span></div></div>`;
-  f.prepend(w);
+  w.innerHTML='<div class="walk-track"></div>';f.prepend(w);
+  const track=w.firstElementChild;
+  makeWaddler(track,'beanie',34,track.clientWidth*.08);
+  watchTrack(track);startWaddling();
+}
+function peep(host,text){
+  const old=host.querySelector(':scope > .peep');if(old)old.remove();
+  const b=document.createElement('span');b.className='peep';b.textContent=text||PEEPS[Math.floor(Math.random()*PEEPS.length)];
+  host.appendChild(b);setTimeout(()=>b.remove(),1500);
+}
+function knockIgloo(ig){
+  ig.classList.remove('knock');void ig.offsetWidth;ig.classList.add('knock');
+  const track=ig.parentElement.querySelector('.yard-track');if(!track)return;
+  if(reduceMotion())return peep(ig,'hi!');
+  if(waddle.list.filter(p=>p.track===track&&p.el.isConnected).length>=YARD_MAX)return peep(ig,'full house ♡');
+  const small=!!(window.matchMedia&&matchMedia('(max-width: 720px)').matches);
+  const w=Math.round((54+Math.random()*18)*(small?.82:1));
+  const p=makeWaddler(track,SPAWN_GEARS[Math.floor(Math.random()*SPAWN_GEARS.length)],w,doorX(ig,{w}));
+  p.el.classList.add('is-inside');p.state='inside';p.wait=.3; // fades in at the door, then waddles out
+  startWaddling();
+}
+function mountPenguinTaps(){
+  document.addEventListener('click',e=>{
+    const w=e.target.closest('.waddler');
+    if(w){
+      const hop=w.querySelector('.waddler-hop');
+      hop.classList.remove('hop');void hop.offsetWidth;hop.classList.add('hop');
+      hop.addEventListener('animationend',()=>hop.classList.remove('hop'),{once:true});
+      peep(w);
+      const p=waddle.list.find(q=>q.el===w);
+      if(p&&p.state==='walk'){p.state='idle';p.wait=1.6;w.classList.remove('is-walking')} // stops to say hi
+      return;
+    }
+    const ig=e.target.closest('.igloo');
+    if(ig)knockIgloo(ig);
+  });
 }
 
 /* ---------- Music player (official Spotify embed) ---------- */

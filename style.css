@@ -277,91 +277,79 @@ body:not([data-page="index"]) .music-card[data-state="idle"] .music-cover{displa
 .site-header .brand{letter-spacing:-.03em}
 
 
-/* ---------- Home: "Janice's little home" welcome + flying penguins ---------- */
-/* The sky spans the full window behind the hero. The hero content sits on top; the penguins fly behind it (and behind the record player). */
+/* ---------- Home: "Janice's little home" welcome + waddling penguins ---------- */
+/* The hero sits on a full-width stage: a soft sky behind it (clouds, sparkles) and a snowy yard with an igloo underneath. */
 .hero-stage{position:relative;overflow:hidden;isolation:isolate}
 .hero-stage>.wrap{position:relative;z-index:1}
-/* No z-index on the sky itself, so single penguins can fly in front (.front) while the rest stay behind the content */
-.penguin-sky{position:absolute;inset:0;overflow:hidden;--speed:1;background:radial-gradient(38% 60% at 0% 0%,#fff1f5 0%,rgba(255,241,245,0) 75%),radial-gradient(32% 55% at 100% 0%,#eef8f4 0%,rgba(238,248,244,0) 75%)}
-.penguin-sky>*{z-index:0}
-.penguin-sky>.fly.front,.penguin-sky>.launch{z-index:2}
-/* Taps in the open sky reach the penguins; the text, buttons and record player still take their own clicks. */
-.hero-stage>.wrap,.hero-stage .hero,.hero-stage .hero-grid,.hero-stage .hero-copy{pointer-events:none}
-.hero-stage .hero-copy>*,.hero-stage .hero-art,.hero-stage .scroll-note{pointer-events:auto}
+.hero-stage .hero{padding-top:70px;padding-bottom:0}
+.penguin-sky{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;--speed:1;background:radial-gradient(38% 60% at 0% 0%,#fff1f5 0%,rgba(255,241,245,0) 75%),radial-gradient(32% 55% at 100% 0%,#eef8f4 0%,rgba(238,248,244,0) 75%)}
 
-/* Welcome pill with a waving penguin */
-.welcome-pill{gap:8px;padding:4px 14px 4px 5px;font-size:12px;letter-spacing:.16em;background:#fff5f8;border-color:#f5d9e2;color:#bd5a80}
-.wave-penguin{display:inline-block;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #f3d6df}
-.wave-penguin svg{display:block;width:100%;height:100%}
-.wave-flipper{fill:#97a2ad;transform-box:view-box;transform-origin:29px 23px;animation:wave 2.4s ease-in-out infinite}
-@keyframes wave{0%,46%,100%{transform:rotate(0)}10%,30%{transform:rotate(-30deg)}20%,38%{transform:rotate(6deg)}}
+/* "Welcome!" in the same typeface as the headline, just smaller */
+.hero-welcome{font-family:'Bricolage Grotesque','Plus Jakarta Sans',sans-serif;font-weight:800;font-size:clamp(1.55rem,2.6vw,2.2rem);line-height:1.1;letter-spacing:-.045em;color:var(--ink);margin-bottom:8px}
 .hero-copy h1{margin-bottom:14px}
 .hero-tag{font-family:'Bricolage Grotesque','Plus Jakarta Sans',sans-serif;font-size:clamp(1.15rem,1.9vw,1.5rem);font-weight:600;letter-spacing:-.025em;line-height:1.4;color:#47707a;margin-bottom:20px}
-.sky-hint{text-transform:none;letter-spacing:.04em;font-weight:700;color:#b3bfba}
-
-/* Penguin drawing (shared by the sky, the footer walker and launched penguins) */
-.pg{display:block;width:100%;height:auto;overflow:visible}
-.pg .flap-l,.pg .flap-r{fill:#97a2ad;transform-box:view-box;animation:var(--flap,.34s) ease-in-out infinite alternate}
-.pg .flap-l{transform-origin:36px 64px;animation-name:flap-l}
-.pg .flap-r{transform-origin:84px 64px;animation-name:flap-r}
-@keyframes flap-l{from{transform:rotate(28deg)}to{transform:rotate(-22deg)}}
-@keyframes flap-r{from{transform:rotate(-28deg)}to{transform:rotate(22deg)}}
-
-/* Flying penguins: .fly crosses the sky, .fly-drift rises and sinks, .fly-bob flutters with each flap, .fly-body does the tap loop */
-.fly{position:absolute;left:0;top:var(--top);width:100%;height:0;transform:translateX(var(--rest,-240px));animation:fly-x calc(var(--dur) * var(--speed)) linear calc(var(--delay) * var(--speed)) infinite}
-.fly.rev{animation-name:fly-x-rev}
-@keyframes fly-x{from{transform:translateX(calc(-1 * var(--size) - 40px))}to{transform:translateX(calc(100% + 40px))}}
-@keyframes fly-x-rev{from{transform:translateX(calc(100% + 40px))}to{transform:translateX(calc(-1 * var(--size) - 40px))}}
-.fly-drift{position:absolute;left:0;top:0;width:var(--size);margin-top:calc(var(--size) * -.45);animation:drift var(--drift,7s) ease-in-out infinite alternate}
-@keyframes drift{from{transform:translateY(calc(var(--amp,20px) * -1))}to{transform:translateY(var(--amp,20px))}}
-.fly-bob{display:block;transform:rotate(calc(var(--lean,1) * 9deg));animation:bob var(--flap,.34s) ease-in-out infinite alternate}
-@keyframes bob{from{translate:0 3px}to{translate:0 -3px}}
-.fly-body{display:block;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;filter:drop-shadow(0 8px 9px rgba(32,48,68,.13))}
-.fly.rev .pg{transform:scaleX(-1)}
-.fly-body.boop{animation:boop .95s cubic-bezier(.3,.7,.3,1)}
-@keyframes boop{0%{transform:none}38%{transform:translateY(-22px) rotate(-210deg) scale(1.14)}72%{transform:translateY(-6px) rotate(-360deg) scale(1.04)}100%{transform:rotate(-360deg)}}
-
-/* Little speech bubble after a tap */
-.peep{position:absolute;left:50%;bottom:calc(100% + 4px);z-index:3;background:#fff;border:1px solid #f2d9e1;border-radius:999px;padding:2px 10px;font:800 12px/1.5 'Plus Jakarta Sans',system-ui,sans-serif;color:#bd5a80;white-space:nowrap;box-shadow:0 6px 16px -6px #b9648a55;pointer-events:none;transform:translateX(-50%);animation:peep 1.4s ease forwards}
-.peep.below{bottom:auto;top:calc(100% + 4px)}
-@keyframes peep{0%{opacity:0;transform:translate(-50%,8px) scale(.6)}14%{opacity:1;transform:translate(-50%,-2px) scale(1.05)}24%{transform:translate(-50%,0) scale(1)}78%{opacity:1}100%{opacity:0;transform:translate(-50%,-14px)}}
 
 /* Clouds and sparkles */
-.cloud{position:absolute;left:0;top:var(--top);width:100%;height:0;color:var(--c);transform:translateX(var(--rest,-400px));animation:fly-x calc(var(--dur) * var(--speed)) linear calc(var(--delay) * var(--speed)) infinite}
+.cloud{position:absolute;left:0;top:var(--top);width:100%;height:0;color:var(--c);transform:translateX(var(--rest,-400px));animation:cloud-x calc(var(--dur) * var(--speed)) linear calc(var(--delay) * var(--speed)) infinite}
+@keyframes cloud-x{from{transform:translateX(calc(-1 * var(--size) - 40px))}to{transform:translateX(calc(100% + 40px))}}
 .cloud svg{display:block;width:var(--size);height:auto}
 .spark{position:absolute;left:var(--x);top:var(--y);width:var(--s);height:var(--s);color:var(--c);opacity:.7;animation:twinkle var(--t) ease-in-out var(--d) infinite}
 .spark svg{display:block;width:100%;height:100%}
 @keyframes twinkle{0%,100%{opacity:.3;transform:scale(.7) rotate(0)}50%{opacity:.95;transform:scale(1.15) rotate(45deg)}}
 
-/* Penguins launched by tapping the open sky */
-.launch{position:absolute;width:46px;z-index:2;pointer-events:none;--flap:.2s;filter:drop-shadow(0 8px 9px rgba(32,48,68,.13))}
-.launch.rev .pg{transform:scaleX(-1)}
+/* Snowy yard + igloo */
+.penguin-yard{position:relative;z-index:2;height:132px;margin-top:-14px}
+.yard-hint{position:absolute;left:max(20px,calc(50% - 542px));bottom:5px;z-index:3;margin:0;font-size:11px;font-weight:700;letter-spacing:.04em;color:#8fa8a0}
+.yard-snow{position:absolute;left:0;bottom:0;display:block;width:100%;height:44px}
+.yard-track{position:absolute;left:0;right:0;bottom:24px;height:0}
+.igloo{position:absolute;bottom:22px;right:max(20px,calc(50% - 540px));z-index:1;width:160px;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transform-origin:50% 100%}
+.igloo svg{display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 6px 8px rgba(32,48,68,.07))}
+.igloo.knock{animation:knock .42s ease}
+@keyframes knock{0%,100%{transform:none}25%{transform:rotate(-2.5deg) scale(1.03)}60%{transform:rotate(2deg)}}
+.igloo .peep{bottom:calc(100% - 6px)}
 
-/* Pause the sky while it is off screen */
-.penguin-sky.is-paused,.penguin-sky.is-paused *{animation-play-state:paused!important}
+/* Waddling penguins (yard and footer). JS moves .waddler left and right; CSS does the waddle, steps, blinks and hops. */
+.waddler{position:absolute;left:0;bottom:0;z-index:2;width:var(--w,50px);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .45s ease}
+.waddler.is-inside{opacity:0;pointer-events:none}
+.waddler-hop{display:block;transform-origin:50% 100%}
+.waddler-hop.hop{animation:hop .55s cubic-bezier(.3,.7,.4,1)}
+@keyframes hop{0%{transform:none}18%{transform:scale(1.08,.9)}50%{transform:translateY(-18px) scale(.96,1.06)}80%{transform:scale(1.06,.94)}100%{transform:none}}
+.pg{display:block;width:100%;height:auto;overflow:visible;transform-origin:50% 92%}
+.waddler .pg{filter:drop-shadow(0 4px 4px rgba(32,48,68,.1))}
+.waddler.face-left .pg{scale:-1 1}
+.pg .eyes{transform-box:fill-box;transform-origin:center;animation:blink 4.4s ease-in-out var(--blink,0s) infinite}
+@keyframes blink{0%,92%,100%{transform:none}95%{transform:scaleY(.12)}}
+.pg .foot,.pg .flip-near{transform-box:view-box}
+.pg .flip-near{transform-origin:41px 58px}
+.waddler.is-walking .pg{animation:waddle var(--step,.34s) ease-in-out infinite alternate}
+.waddler.is-walking .foot-f{animation:step-a var(--step,.34s) ease-in-out infinite alternate}
+.waddler.is-walking .foot-b{animation:step-b var(--step,.34s) ease-in-out infinite alternate}
+.waddler.is-walking .flip-near{animation:swing var(--step,.34s) ease-in-out infinite alternate}
+@keyframes waddle{from{transform:rotate(-7deg)}50%{transform:translateY(-2px)}to{transform:rotate(7deg)}}
+@keyframes step-a{from{transform:translateY(-4px)}to{transform:none}}
+@keyframes step-b{from{transform:none}to{transform:translateY(-4px)}}
+@keyframes swing{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}
 
-/* Footer: a small penguin waddles along the line */
+/* Little speech bubble after a tap */
+.peep{position:absolute;left:50%;bottom:calc(100% + 2px);z-index:3;background:#fff;border:1px solid #f2d9e1;border-radius:999px;padding:2px 10px;font:800 12px/1.5 'Plus Jakarta Sans',system-ui,sans-serif;color:#bd5a80;white-space:nowrap;box-shadow:0 6px 16px -6px #b9648a55;pointer-events:none;transform:translateX(-50%);animation:peep 1.5s ease forwards}
+@keyframes peep{0%{opacity:0;transform:translate(-50%,8px) scale(.6)}14%{opacity:1;transform:translate(-50%,-2px) scale(1.05)}24%{transform:translate(-50%,0) scale(1)}78%{opacity:1}100%{opacity:0;transform:translate(-50%,-14px)}}
+
+/* Footer: one penguin waddles along the line */
 .footer{position:relative}
-.footer-walk{position:absolute;top:-27px;left:50%;width:min(1160px,100%);height:26px;padding:0 38px;transform:translateX(-50%);pointer-events:none}
+.footer-walk{position:absolute;top:-35px;left:50%;width:min(1160px,100%);height:34px;padding:0 38px;transform:translateX(-50%);pointer-events:none}
 .walk-track{position:relative;height:100%}
-.walker{position:absolute;left:0;bottom:0;width:26px;height:100%;animation:walk 46s linear infinite}
-.walker-pg{position:absolute;left:0;bottom:0;width:26px;pointer-events:auto;cursor:pointer;transform-origin:50% 100%;animation:waddle .42s ease-in-out infinite alternate}
-.walker-pg .flap-l{animation:none;transform:rotate(-38deg)}
-.walker-pg .flap-r{animation:none;transform:rotate(38deg)}
-@keyframes walk{0%,4%{left:0}46%,54%{left:calc(100% - 26px)}96%,100%{left:0}}
-@keyframes waddle{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}
-.walker .peep{left:13px}
+.footer-walk .waddler{bottom:-2px;pointer-events:auto}
 
 @media(max-width:950px){.footer-walk{padding:0 25px}}
 @media(max-width:720px){
 .penguin-sky{--speed:.55}
-.fly{top:var(--top-sm,var(--top))}
-.hero-stage .hero{padding-top:86px}
-.fly-drift{width:calc(var(--size) * .78)}
-.fly.hide-sm,.spark.hide-sm{display:none}
+.spark.hide-sm{display:none}
+.hero-stage .hero{padding-top:44px;padding-bottom:0}
+.yard-hint{font-size:10px;bottom:4px}
 .hero-tag{margin-bottom:16px}
-.sky-hint{display:none}
+.penguin-yard{height:112px}
+.igloo{width:122px;right:16px}
 .footer-walk{padding:0 20px}
 }
-@media(prefers-reduced-motion:reduce){.fly:not([style*="--rest"]),.cloud:not([style*="--rest"]){display:none}}
-@media print{.penguin-sky,.footer-walk{display:none!important}}
+@media(prefers-reduced-motion:reduce){.cloud:not([style*="--rest"]){display:none}}
+@media print{.penguin-sky,.penguin-yard,.footer-walk{display:none!important}}
